@@ -16,7 +16,7 @@
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>Web Application Starter Project</title>
+    <title>Web User Interface (v.0.1 8/18/13)</title>
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
@@ -44,12 +44,39 @@
       </div>
     </noscript>
 
-    <h1>Web Application Starter Project</h1>
+    <h1>Web User Interface</h1>
 
-    <table align="center">
+<table border=1 height="600px" width="100%">
+<tr>
+	<td width="75%">
+		<table border=1 height="100%" width="100%">
+			<tr height="60%">
+				<td>
+				<table border=1 height="100%" width="100%%"> 
+				<tr>
+					<td width="33%" id="dialogPanelContainer"></td>
+					<td width="33%" id="grammarPanelContainer"></td>
+					<td width="34%" id="dictionaryPanelContainer"></td>
+				</tr>
+				</table>
+				</td>
+			</tr>
+			<tr height="20%">
+				<td id="databasePanelContainer"></td>
+			</tr>
+			<tr height="20%">
+				<td id="interpreterPanelContainer"></td>
+			</tr>
+		</table>
+	</td>
+	<td width="25%" id="platformPanelContainer"></td>
+</tr>
+</table>
+
+    
+<table align="center">
       <tr>
-      	<td id="dialogPanelContainer"></td>
-        <td colspan="2" style="font-weight:bold;">Please enter your name:</td>        
+        <td colspan="2" style="font-weight:bold;">Application Name:</td>        
       </tr>
       <tr>
         <td id="nameFieldContainer"></td>
