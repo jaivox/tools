@@ -1,0 +1,2 @@
+serviceClass: com.jaivox.client.GreetingService
+path: 37FEF31C3A2711748BA4CBAE53B63745.gwt.rpc

@@ -4,6 +4,8 @@
  */
 package jui;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -16,17 +18,20 @@ import javax.swing.tree.TreeNode;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
+
 /**
  *
  * @author lin
  */
 public class JvxDialogHelper {
+    JvxMainFrame theFrame = null;
     private JTree dialogTree = null;
     DefaultMutableTreeNode rightClickedNode = null;
     
     
-    public JvxDialogHelper() {
+    public JvxDialogHelper(JvxMainFrame frame) {
         super();
+        theFrame = frame;
     }
     public JPopupMenu createPopup() {
         final DialogMenuAction menuAction = new DialogMenuAction(dialogTree, rightClickedNode);
@@ -47,10 +52,11 @@ public class JvxDialogHelper {
         return popup;
     }
     public void dialogTreeRClicked(java.awt.event.MouseEvent evt) {
+        JTree tree = (JTree)evt.getSource();
+            
         if( evt.isPopupTrigger() ) {
             int x = evt.getX();
             int y = evt.getY();
-            JTree tree = (JTree)evt.getSource();
             dialogTree = tree;
             TreePath path = tree.getPathForLocation(x, y);
             if (path == null) return;
@@ -77,9 +83,24 @@ public class JvxDialogHelper {
                 popup.show(tree, x, y);
            // }
         }
+        else {
+        }
     }
-}
 
+    void dialogTreeMouseClicked(MouseEvent evt) {
+        JTree tree = (JTree)evt.getSource();
+        
+        if(evt.getClickCount() == 1 || evt.getClickCount() == 2) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+            System.out.println(node);
+            
+            theFrame.getGrammarList().setListData(Collections.list(node.breadthFirstEnumeration()).toArray());
+        }
+         
+    }
+
+
+}
 class DialogMenuAction implements ActionListener {
 
     private JTree dialogTree = null;
@@ -94,8 +115,17 @@ class DialogMenuAction implements ActionListener {
         DefaultTreeModel model = (DefaultTreeModel)dialogTree.getModel();
         String action = ((JMenuItem)ae.getSource()).getText();
         System.out.println("Menu: " + action);
+        // TODO - may be a confirm action here
         if(action.equals("Add")) {
-            rightClickedNode.add(new DefaultMutableTreeNode("another_child"));
+            DefaultMutableTreeNode anotherNode = new DefaultMutableTreeNode(" ");
+            rightClickedNode.add(anotherNode);
+            model.reload(rightClickedNode);
+            TreeNode[] nodes = ((DefaultTreeModel) dialogTree.getModel()).getPathToRoot(anotherNode);
+            TreePath tpath = new TreePath(nodes);
+            //dialogTree.scrollPathToVisible(tpath);
+            dialogTree.expandPath(tpath);
+            dialogTree.setSelectionPath(tpath);
+            //dialogTree.startEditingAtPath(tpath);
         }
         else if(action.equals("Delete")) {
             rightClickedNode.removeAllChildren();
