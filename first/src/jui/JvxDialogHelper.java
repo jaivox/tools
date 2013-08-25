@@ -91,10 +91,12 @@ public class JvxDialogHelper {
         JTree tree = (JTree)evt.getSource();
         
         if(evt.getClickCount() == 1 || evt.getClickCount() == 2) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-            System.out.println(node);
-            
-            theFrame.getGrammarList().setListData(Collections.list(node.breadthFirstEnumeration()).toArray());
+            TreePath tpath = tree.getSelectionPath();
+            if(tpath != null) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode)tpath.getLastPathComponent();
+                System.out.println(node);
+                theFrame.getGrammarList().setListData(Collections.list(node.breadthFirstEnumeration()).toArray());
+            }
         }
          
     }
