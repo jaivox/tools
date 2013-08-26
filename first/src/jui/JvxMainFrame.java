@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -25,6 +27,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
      * Creates new form JvxMainFrame
      */
     public JvxMainFrame() {
+        jvxConf = new JvxConfiguration( "" );
         initComponents();
     }
 
@@ -525,6 +528,14 @@ public class JvxMainFrame extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
+        String proj = appName.getText().trim();
+        if(proj.length() <= 0 || proj.equals("Type Name ...")) {
+            JOptionPane.showMessageDialog(null,
+                "Missing: Application Name", "Error Massage",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        jvxConf.setAppName(appName.getText());
         jvxConf.save(this);
     }//GEN-LAST:event_btnSaveActionPerformed
 
@@ -537,7 +548,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
     private void appNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appNameActionPerformed
         // TODO add your handling code here:
         JTextField apn = (JTextField)evt.getSource();
-        jvxConf = new JvxConfiguration( apn.getText() );
+        jvxConf.setAppName(apn.getText());
     }//GEN-LAST:event_appNameActionPerformed
 
     public JTree getDialogTree() {
