@@ -469,20 +469,24 @@ public class JvxMainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_dialogTreeMousePressed
     
     Rectangle recdlg = null;
-    Rectangle sroldlg = null;
+    Rectangle scroldlg = null;
         
     public void overlapDialog(MouseEvent evt, boolean overlap) {
         Rectangle rec = dgdLayeredPane.getBounds();
         if(overlap) {
-            recdlg = dialogTree.getBounds();
-            sroldlg = dlgTreeScrollPane.getBounds();
-            dlgTreeScrollPane.setBounds(sroldlg.x, sroldlg.y, sroldlg.height, sroldlg.width + (rec.width));
+            if(recdlg == null || scroldlg == null) {
+                recdlg = dialogTree.getBounds();
+                scroldlg = dlgTreeScrollPane.getBounds();
+            }
+            dlgTreeScrollPane.setBounds(scroldlg.x, scroldlg.y, scroldlg.height, scroldlg.width + (rec.width));
             dialogTree.setBounds(recdlg.x, recdlg.y, recdlg.height, recdlg.width + (rec.width));
             //this.dgdLayeredPane.moveToFront(dlgTreeScrollPane);
         }
         else {
-            dlgTreeScrollPane.setBounds(sroldlg);
-            dialogTree.setBounds(recdlg);
+            if(recdlg != null && scroldlg != null) {
+                dlgTreeScrollPane.setBounds(scroldlg);
+                dialogTree.setBounds(recdlg);
+            }
             //this.dgdLayeredPane.moveToBack(dlgTreeScrollPane);
         }
     }
@@ -516,7 +520,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 tab.addRow(new String[]{tag.trim()});
             }
         }
-       
+       //overlapDialog(evt, false);
        //dgdLayeredPane.setLayer(dlgTreeScrollPane, JLayeredPane.DEFAULT_LAYER);
        //dgdLayeredPane.moveToBack(dlgTreeScrollPane);
     }//GEN-LAST:event_grammarListMouseClicked
