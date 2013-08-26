@@ -9,7 +9,10 @@ import javax.swing.table.*;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Properties;
 import java.util.regex.Pattern;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -18,12 +21,14 @@ import java.util.regex.Pattern;
 public class JvxMainFrame extends javax.swing.JFrame {
 
     DefaultMutableTreeNode rightClickedNode = null;
+    JvxConfiguration jvxConf = null;
+    
     /**
      * Creates new form JvxMainFrame
      */
     public JvxMainFrame() {
+        jvxConf = new JvxConfiguration( "" );
         initComponents();
-
     }
 
     /**
@@ -55,12 +60,16 @@ public class JvxMainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
+        appName = new javax.swing.JTextField();
         targetSpecPanel = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox();
+        osList = new javax.swing.JComboBox();
+        btnSave = new javax.swing.JButton();
+        btnRun = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jaivox App Gen");
@@ -98,7 +107,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
 
         dgdPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dialog Mgmt", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(151, 149, 198)));
 
-        dgdLayeredPane.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        dgdLayeredPane.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         dgdLayeredPane.setNextFocusableComponent(dialogTree);
         dgdLayeredPane.setRequestFocusEnabled(false);
 
@@ -130,7 +139,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
         });
         dlgTreeScrollPane.setViewportView(dialogTree);
 
-        dlgTreeScrollPane.setBounds(10, 10, 190, 330);
+        dlgTreeScrollPane.setBounds(0, 0, 200, 342);
         dgdLayeredPane.add(dlgTreeScrollPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         grammarList.setModel(new javax.swing.AbstractListModel() {
@@ -147,7 +156,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(grammarList);
 
-        jScrollPane2.setBounds(200, 10, 170, 330);
+        jScrollPane2.setBounds(200, 0, 170, 340);
         dgdLayeredPane.add(jScrollPane2, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         dictTab.setModel(new javax.swing.table.DefaultTableModel(
@@ -164,7 +173,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
         dictTab.setCellSelectionEnabled(true);
         jScrollPane3.setViewportView(dictTab);
 
-        jScrollPane3.setBounds(370, 10, 290, 170);
+        jScrollPane3.setBounds(370, 0, 290, 180);
         dgdLayeredPane.add(jScrollPane3, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         dictRelationsTab.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -216,7 +225,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -244,19 +253,41 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        jLabel4.setText("App Name");
+
+        appName.setText("Type Name ...");
+        appName.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                appNameMousePressed(evt);
+            }
+        });
+        appName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                appNameActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout contentSpecPanelLayout = new javax.swing.GroupLayout(contentSpecPanel);
         contentSpecPanel.setLayout(contentSpecPanelLayout);
         contentSpecPanelLayout.setHorizontalGroup(
             contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(dgdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(contentSpecPanelLayout.createSequentialGroup()
+                .addComponent(jLabel4)
+                .addGap(18, 18, 18)
+                .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(langPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
         contentSpecPanelLayout.setVerticalGroup(
             contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(contentSpecPanelLayout.createSequentialGroup()
-                .addComponent(langPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(langPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dgdPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -294,7 +325,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
 
         jLabel2.setText("OS: ");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Linux-RH", "Linux-Debian", "Windows", "Mac", "Tab-Android", "Tab-iOS" }));
+        osList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Linux-RH", "Linux-Debian", "Windows", "Mac", "Tab-Android", "Tab-iOS" }));
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
@@ -303,15 +334,15 @@ public class JvxMainFrame extends javax.swing.JFrame {
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(osList, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(osList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout targetSpecPanelLayout = new javax.swing.GroupLayout(targetSpecPanel);
@@ -332,6 +363,17 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        btnSave.setText("Save");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
+
+        btnRun.setText("Run");
+        btnRun.setMaximumSize(new java.awt.Dimension(42, 27));
+        btnRun.setMinimumSize(new java.awt.Dimension(42, 27));
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -339,15 +381,28 @@ public class JvxMainFrame extends javax.swing.JFrame {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(contentSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(targetSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(targetSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(42, 42, 42))))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(contentSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(targetSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(contentSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(targetSpecPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSave)
+                    .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -443,8 +498,8 @@ public class JvxMainFrame extends javax.swing.JFrame {
     private void dialogTreeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMouseClicked
         // TODO add your handling code here:
         // init and set the Grammar panel
-        JTree tree = (JTree)evt.getSource();
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+        //JTree tree = (JTree)evt.getSource();
+        //DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
         
     }//GEN-LAST:event_dialogTreeMouseClicked
 
@@ -470,6 +525,31 @@ public class JvxMainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         //dialogTreeFocusLost(evt);
     }//GEN-LAST:event_dlgTreeScrollPaneFocusLost
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+        String proj = appName.getText().trim();
+        if(proj.length() <= 0 || proj.equals("Type Name ...")) {
+            JOptionPane.showMessageDialog(null,
+                "Missing: Application Name", "Error Massage",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        jvxConf.setAppName(appName.getText());
+        jvxConf.save(this);
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void appNameMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appNameMousePressed
+        // TODO add your handling code here:
+        JTextField apn = (JTextField)evt.getSource();
+        if(apn.getText().equals("Type Name ...")) apn.setText("");
+    }//GEN-LAST:event_appNameMousePressed
+
+    private void appNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appNameActionPerformed
+        // TODO add your handling code here:
+        JTextField apn = (JTextField)evt.getSource();
+        jvxConf.setAppName(apn.getText());
+    }//GEN-LAST:event_appNameActionPerformed
 
     public JTree getDialogTree() {
         return dialogTree;
@@ -524,6 +604,9 @@ public class JvxMainFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField appName;
+    private javax.swing.JButton btnRun;
+    private javax.swing.JButton btnSave;
     private javax.swing.JPanel contentSpecPanel;
     private javax.swing.JLayeredPane dgdLayeredPane;
     private javax.swing.JPanel dgdPanel;
@@ -533,11 +616,11 @@ public class JvxMainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane dlgTreeScrollPane;
     private javax.swing.JList grammarList;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox2;
     private javax.swing.JComboBox jComboBox3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
@@ -549,6 +632,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
     private javax.swing.JTable jTable2;
     private javax.swing.JPanel langPanel;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JComboBox osList;
     private javax.swing.JPanel targetSpecPanel;
     // End of variables declaration//GEN-END:variables
 }
