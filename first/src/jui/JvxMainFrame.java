@@ -8,11 +8,10 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.dnd.DragSource;
 import java.awt.event.*;
-import java.util.Properties;
 import java.util.regex.Pattern;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -22,13 +21,28 @@ public class JvxMainFrame extends javax.swing.JFrame {
 
     DefaultMutableTreeNode rightClickedNode = null;
     JvxConfiguration jvxConf = null;
-    
+    final JvxDialogLoader dlgLoader = new JvxDialogLoader ();
+    String qualData [][] = null;
+    String headers [] = new String [4];
+    DragSource ds;
+    StringSelection transferable;
+        
     /**
      * Creates new form JvxMainFrame
      */
     public JvxMainFrame() {
         jvxConf = new JvxConfiguration( "" );
+        qualData = dlgLoader.loadQualData ();
+    
+        headers [0] = "Num";
+        headers [1] = "Road";
+        headers [2] = "Fast";
+        headers [3] = "Smooth";
+        
         initComponents();
+        dlgLoader.loadDialogs(dialogTree);
+       
+        this.dialogTree.setTransferHandler(new DragHandler(this));
     }
 
     /**
@@ -59,7 +73,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
         jComboBox3 = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        qualdbTable = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         appName = new javax.swing.JTextField();
         targetSpecPanel = new javax.swing.JPanel();
@@ -123,6 +137,8 @@ public class JvxMainFrame extends javax.swing.JFrame {
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         dialogTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        dialogTree.setDragEnabled(true);
+        dialogTree.setDropMode(javax.swing.DropMode.INSERT);
         dialogTree.setEditable(true);
         dialogTree.setScrollsOnExpand(true);
         new JvxDialogLoader().loadDialogs(dialogTree);
@@ -143,12 +159,13 @@ public class JvxMainFrame extends javax.swing.JFrame {
         dgdLayeredPane.add(dlgTreeScrollPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         grammarList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "are NNS JJ-N at this time", "which NN is JJ-P" };
+            // String[] strings = { "are NNS JJ-N at this time", "which NN is JJ-P" };
+            String [] strings = dlgLoader.loadGrammar ();
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        grammarList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         grammarList.setToolTipText("");
+        grammarList.setDragEnabled(true);
         grammarList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 grammarListMouseClicked(evt);
@@ -197,14 +214,9 @@ public class JvxMainFrame extends javax.swing.JFrame {
 
         jLabel3.setText("Data:");
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"1", "Old Mill Road", "67.45", "64.61"},
-                {"2", null, null, null}
-            },
-            new String [] {
-                "Sl No.", "Road", "Fast", "smooth"
-            }
+        qualdbTable.setModel(new javax.swing.table.DefaultTableModel(
+            qualData,
+            headers
         ) {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
@@ -214,7 +226,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane4.setViewportView(jTable2);
+        jScrollPane4.setViewportView(qualdbTable);
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -460,29 +472,39 @@ public class JvxMainFrame extends javax.swing.JFrame {
            // }
         }
     }
+    public DefaultMutableTreeNode getMouseOnNode(int x, int y) {
+        TreePath path = this.dialogTree.getPathForLocation(x, y);
+        if (path == null) return null;
+
+        return (DefaultMutableTreeNode)path.getLastPathComponent();
+    }
     private void dialogTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMousePressed
         // TODO add your handling code here:
-       if( !evt.isPopupTrigger() ) new JvxDialogHelper(this).dialogTreeMouseClicked(evt);
+       //if( !evt.isPopupTrigger() ) new JvxDialogHelper(this).dialogTreeMouseClicked(evt);
        //new JvxDialogHelper(this).
        overlapDialog(evt, true);
        new JvxDialogHelper(this).dialogTreeRClicked(evt);
     }//GEN-LAST:event_dialogTreeMousePressed
     
     Rectangle recdlg = null;
-    Rectangle sroldlg = null;
+    Rectangle scroldlg = null;
         
     public void overlapDialog(MouseEvent evt, boolean overlap) {
         Rectangle rec = dgdLayeredPane.getBounds();
         if(overlap) {
-            recdlg = dialogTree.getBounds();
-            sroldlg = dlgTreeScrollPane.getBounds();
-            dlgTreeScrollPane.setBounds(sroldlg.x, sroldlg.y, sroldlg.height, sroldlg.width + (rec.width));
+            if(recdlg == null || scroldlg == null) {
+                recdlg = dialogTree.getBounds();
+                scroldlg = dlgTreeScrollPane.getBounds();
+            }
+            dlgTreeScrollPane.setBounds(scroldlg.x, scroldlg.y, scroldlg.height, scroldlg.width + (rec.width));
             dialogTree.setBounds(recdlg.x, recdlg.y, recdlg.height, recdlg.width + (rec.width));
             //this.dgdLayeredPane.moveToFront(dlgTreeScrollPane);
         }
         else {
-            dlgTreeScrollPane.setBounds(sroldlg);
-            dialogTree.setBounds(recdlg);
+            if(recdlg != null && scroldlg != null) {
+                dlgTreeScrollPane.setBounds(scroldlg);
+                dialogTree.setBounds(recdlg);
+            }
             //this.dgdLayeredPane.moveToBack(dlgTreeScrollPane);
         }
     }
@@ -516,7 +538,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 tab.addRow(new String[]{tag.trim()});
             }
         }
-       
+       //overlapDialog(evt, false);
        //dgdLayeredPane.setLayer(dlgTreeScrollPane, JLayeredPane.DEFAULT_LAYER);
        //dgdLayeredPane.moveToBack(dlgTreeScrollPane);
     }//GEN-LAST:event_grammarListMouseClicked
@@ -629,10 +651,10 @@ public class JvxMainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JTable jTable2;
     private javax.swing.JPanel langPanel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JComboBox osList;
+    private javax.swing.JTable qualdbTable;
     private javax.swing.JPanel targetSpecPanel;
     // End of variables declaration//GEN-END:variables
 }

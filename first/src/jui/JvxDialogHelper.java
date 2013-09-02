@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -24,6 +26,7 @@ import javax.swing.tree.TreePath;
  * @author lin
  */
 public class JvxDialogHelper {
+    static String datadir = JvxConfiguration.datadir;
     JvxMainFrame theFrame = null;
     private JTree dialogTree = null;
     DefaultMutableTreeNode rightClickedNode = null;
@@ -141,4 +144,48 @@ class DialogMenuAction implements ActionListener {
         model.reload(rightClickedNode);
     }
     
+}
+
+class DragHandler extends TransferHandler {
+    JvxMainFrame theFrame = null;
+    public DragHandler(JvxMainFrame frame)
+    {
+        super();
+        theFrame = frame;
+    }
+    public boolean canImport(TransferSupport support) {
+         if (!support.isDrop()) {
+             return false;
+         }
+
+         return support.isDataFlavorSupported(DataFlavor.stringFlavor);
+     }
+
+     public boolean importData(TransferSupport support) {
+         if (!canImport(support)) {
+           return false;
+         }
+
+         Transferable transferable = support.getTransferable();
+         String line;
+         try {
+           line = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+         } catch (Exception e) {
+           return false;
+         }
+
+         JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
+         
+         String[] data = line.split("\n");
+         for (String item: data) {
+             if (!item.isEmpty()) {
+                //DefaultMutableTreeNode node = (DefaultMutableTreeNode)dl.getPath().getLastPathComponent();
+                Point p = dl.getDropPoint();
+                DefaultMutableTreeNode node = theFrame.getMouseOnNode((int)p.getX(), (int)p.getY());
+                node.add(new DefaultMutableTreeNode(item));
+                ((DefaultTreeModel)theFrame.getDialogTree().getModel()).reload(node);
+             }
+         }
+         return true;
+     }
 }

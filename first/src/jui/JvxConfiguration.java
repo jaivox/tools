@@ -19,7 +19,9 @@ import javax.swing.JTextField;
  */
 public class JvxConfiguration {
     
-    static final String genFolder = "./gen/";
+    public static final String genFolder = "./gen/";
+    public static final String datadir = "data/";
+    
     Properties conf = null; //new Properties();
     String appName = null;
     JvxConfiguration(String text) {
@@ -43,7 +45,7 @@ public class JvxConfiguration {
         };
         BufferedReader bf = null;
         try {
-            bf = new BufferedReader(new FileReader("template.conf"));
+            bf = new BufferedReader(new FileReader(datadir + "template.conf"));
             conf.load(bf);
         } catch (Exception e) { e.printStackTrace(); }
         finally {

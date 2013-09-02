@@ -244,6 +244,10 @@
                             <Property name="model" type="javax.swing.tree.TreeModel" editor="org.netbeans.modules.form.editors2.TreeModelEditor">
                               <TreeModel code="Dialogs&#xa; are NNS JJ-N at this time ;&#xa;  which NN is JJ-P"/>
                             </Property>
+                            <Property name="dragEnabled" type="boolean" value="true"/>
+                            <Property name="dropMode" type="javax.swing.DropMode" editor="org.netbeans.modules.form.editors.EnumEditor">
+                              <Value id="INSERT"/>
+                            </Property>
                             <Property name="editable" type="boolean" value="true"/>
                             <Property name="scrollsOnExpand" type="boolean" value="true"/>
                           </Properties>
@@ -272,14 +276,11 @@
                       <SubComponents>
                         <Component class="javax.swing.JList" name="grammarList">
                           <Properties>
-                            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                              <StringArray count="2">
-                                <StringItem index="0" value="are NNS JJ-N at this time"/>
-                                <StringItem index="1" value="which NN is JJ-P"/>
-                              </StringArray>
+                            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="new javax.swing.AbstractListModel() {&#xa;&#x9;// String[] strings = { &quot;are NNS JJ-N at this time&quot;, &quot;which NN is JJ-P&quot; };&#xa;&#x9;String [] strings = dlgLoader.loadGrammar ();&#xa;&#x9;public int getSize() { return strings.length; }&#xa;&#x9;public Object getElementAt(int i) { return strings[i]; }&#xa;}" type="code"/>
                             </Property>
-                            <Property name="selectionMode" type="int" value="0"/>
                             <Property name="toolTipText" type="java.lang.String" value=""/>
+                            <Property name="dragEnabled" type="boolean" value="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="grammarListMouseClicked"/>
@@ -439,27 +440,10 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JTable" name="jTable2">
+                        <Component class="javax.swing.JTable" name="qualdbTable">
                           <Properties>
-                            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                              <Table columnCount="4" rowCount="2">
-                                <Column editable="true" title="Sl No." type="java.lang.String">
-                                  <Data value="1"/>
-                                  <Data value="2"/>
-                                </Column>
-                                <Column editable="true" title="Road" type="java.lang.String">
-                                  <Data value="Old Mill Road"/>
-                                  <Data value="null"/>
-                                </Column>
-                                <Column editable="true" title="Fast" type="java.lang.String">
-                                  <Data value="67.45"/>
-                                  <Data value="null"/>
-                                </Column>
-                                <Column editable="true" title="smooth" type="java.lang.String">
-                                  <Data value="64.61"/>
-                                  <Data value="null"/>
-                                </Column>
-                              </Table>
+                            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                              <Connection code="new javax.swing.table.DefaultTableModel(&#xa;&#x9;qualData,&#xa;&#x9;headers&#xa;) {&#xa;    Class[] types = new Class [] {&#xa;        java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class&#xa;    };&#xa;&#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return types [columnIndex];&#xa;    }&#xa;}" type="code"/>
                             </Property>
                           </Properties>
                         </Component>
