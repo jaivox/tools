@@ -6,19 +6,17 @@ package jui;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.JTree;
-import javax.swing.tree.TreePath;
-import java.util.Map.Entry;
 
 import com.jaivox.tools.*;
-import com.jaivox.util.Log;
+import gengram.GrammarGenerator;
+import gengram.SentenceX;
+import gengram.sentence;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.Map;
+import java.util.Enumeration;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -29,26 +27,33 @@ import java.util.Vector;
  * @author lin
  */
 public class JvxDialogLoader {
-    static String datadir = JvxConfiguration.datadir;
-    
-    public JvxDialogLoader() {
+    static final String datadir = JvxConfiguration.datadir;
+    static final String filename = datadir + "road1.tree";
+    static final String datfile = datadir + "road1.data";
         
+    public static GrammarGenerator gen = null;
+        
+    public JvxDialogLoader() {
+        gen = new GrammarGenerator(filename, datfile);
+        gen.generate(filename);
     }
+
     public void loadDialogs(JTree dialogTree) {
         
-        String filename = datadir + "road.tree";
+        String filename = datadir + "road1.tree";
         File f = new File (filename);
         System.out.println (f.getAbsolutePath ());
-        DefaultMutableTreeNode node1 = readConversation (datadir + "road.tree", "road");
+        DefaultMutableTreeNode node1 = readConversation (filename, "road");
 
-        DefaultMutableTreeNode node2 = readConversation(datadir + "eattemplate.txt", "restaurant");
-        readExpressions(datadir + "road.tree", node2);
+        //DefaultMutableTreeNode node2 = readConversation(datadir + "eattemplate.txt", "restaurant");
+        //readExpressions(datadir + "road.tree", node2);
         
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Dialogs");
         root.add(node1);
-        root.add(node2);
+        //root.add(node2);
         DefaultTreeModel model = (DefaultTreeModel)dialogTree.getModel();
         model.setRoot(root);
+
     }
     void readExpressions(String file, DefaultMutableTreeNode root) {
         QaList qs = new QaList(file);
@@ -83,7 +88,20 @@ public class JvxDialogLoader {
                 if(skip) continue;
                 level = 1;
                 for(int i = 0; tabline.charAt(i) == '\t'; i++) level++;
-                DefaultMutableTreeNode tn = new DefaultMutableTreeNode(line);
+                DefaultMutableTreeNode tn = null;
+                StringTokenizer st = new StringTokenizer (line, GrammarGenerator.DLG_DLIM);
+                while (st.hasMoreTokens ()) {
+                    String token = st.nextToken ().trim ();
+                    if (token.length () == 0) continue;
+                    if (!token.endsWith ("?") && !token.endsWith (".")) {
+                            token = token + ".";
+                    }
+                    sentence c = gen.getSentence(token);
+                    SentenceX sx = c == null ? null : new SentenceX( c );
+                    if(tn == null) tn = new DefaultMutableTreeNode(sx == null ? token : sx);
+                        else tn.add(new DefaultMutableTreeNode(sx == null ? token : sx));
+                }
+                
                 node[level] = tn;
                 node[level-1].add(tn);
                 
@@ -156,3 +174,4 @@ public class JvxDialogLoader {
     }
 
 }
+

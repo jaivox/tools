@@ -4,8 +4,7 @@
  */
 package jui;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import gengram.SentenceX;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -13,12 +12,15 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+
 
 
 /**
@@ -43,17 +45,84 @@ public class JvxDialogHelper {
         JMenuItem addMenuItem = new JMenuItem("Add");
         JMenuItem delMenuItem = new JMenuItem("Delete");
         JMenuItem editMenuItem = new JMenuItem("Edit");
+        //JMenuItem synMenuItem = new JMenuItem("Synonyms");
         
         addMenuItem.addActionListener(menuAction);
         delMenuItem.addActionListener(menuAction);
         editMenuItem.addActionListener(menuAction);
+        //synMenuItem.addActionListener(menuAction);
+        
+       
         
         popup.add(addMenuItem);
         popup.add(delMenuItem);
         popup.add(editMenuItem);
+        popup.add(createSynonymsMenu());
+        popup.add(createOkaysSynonymsMenu());
         
         return popup;
     }
+    private JMenu createSynonymsMenu() {
+        JMenu submenu = new JMenu("Synonyms");
+        
+        Object ox = rightClickedNode.getUserObject();
+        if(ox instanceof SentenceX) {
+            SentenceX sx = (SentenceX)ox;
+            String words[] = sx.getWords();
+            //String syns[] = JvxDialogLoader.gen.getSynonyms( words[words.length/2]);
+            for(String word : words) {
+                String syns[] = JvxDialogLoader.gen.getSynonyms( word );
+                if(syns != null) {
+                    JMenu syMenu = new JMenu(word);
+                    for(String s : syns) {
+                        JMenuItem menuItem = new JMenuItem(s);
+                        syMenu.add(menuItem);
+                    }
+                    submenu.add(syMenu);
+                }
+            }
+            
+        }
+        return submenu;
+    }
+    private JMenu createOkaysSynonymsMenu() {
+        JMenu submenu = new JMenu("Synonyms");
+        
+        Object ox = rightClickedNode.getUserObject();
+        if(ox instanceof SentenceX) {
+            SentenceX sx = (SentenceX)ox;
+            String words[] = sx.getWords();
+            String[][] okwords = sx.getOkayWords();
+            for(String word : words) {
+                String[] syns = null;
+                if(word == null) continue;
+                for(String[] oks : okwords) {
+                    if(oks == null) continue;
+                    for(String ok : oks) {
+                        if(ok == null) continue;
+                        if(ok.equals(word) && oks.length > 1) {
+                            syns = oks;
+                            break;
+                        }
+                    }
+                    if(syns != null) break;
+                }
+                if(syns != null) {
+                    JMenu syMenu = new JMenu(word);
+                    for(String s : syns) {
+                        if(word.equals(s)) continue;
+                        JMenuItem menuItem = new JMenuItem(s);
+                        syMenu.add(menuItem);
+                    }
+                    submenu.add(syMenu);
+                }
+            }
+            
+        }
+        return submenu;
+    }     
+
+    
     public void dialogTreeRClicked(java.awt.event.MouseEvent evt) {
         JTree tree = (JTree)evt.getSource();
             
@@ -96,15 +165,26 @@ public class JvxDialogHelper {
         if(evt.getClickCount() == 1 || evt.getClickCount() == 2) {
             TreePath tpath = tree.getSelectionPath();
             if(tpath != null) {
+                ArrayList<String> oks = new ArrayList<String>();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)tpath.getLastPathComponent();
                 System.out.println(node);
-                theFrame.getGrammarList().setListData(Collections.list(node.breadthFirstEnumeration()).toArray());
+                for(Enumeration e = node.breadthFirstEnumeration(); e.hasMoreElements();) {
+                    DefaultMutableTreeNode nd = (DefaultMutableTreeNode)e.nextElement();
+                    ArrayList<String> al = null;
+                    Object sx = nd.getUserObject();
+                    if(sx instanceof SentenceX) {
+                        al = new ArrayList<String> ();
+                        ((SentenceX)sx).generateokays(al);
+                    }
+                    if(al != null) {
+                        oks.addAll(al);
+                    }
+                }
+                theFrame.getGrammarList().setListData(oks.toArray());
             }
+                
         }
-         
     }
-
-
 }
 class DialogMenuAction implements ActionListener {
 
@@ -118,7 +198,8 @@ class DialogMenuAction implements ActionListener {
     
     public void actionPerformed(ActionEvent ae) {
         DefaultTreeModel model = (DefaultTreeModel)dialogTree.getModel();
-        String action = ((JMenuItem)ae.getSource()).getText();
+        JMenuItem mi = (JMenuItem)ae.getSource();
+        String action = mi.getText();
         System.out.println("Menu: " + action);
         // TODO - may be a confirm action here
         if(action.equals("Add")) {
@@ -140,10 +221,18 @@ class DialogMenuAction implements ActionListener {
         else if(action.equals("Edit")) {
             dialogTree.startEditingAtPath(dialogTree.getSelectionPath());
         }
-        
+        if(action.equals("Synonyms")) {
+            TreePath tpath = dialogTree.getSelectionPath();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)tpath.getLastPathComponent();
+            
+            Object sx = node.getUserObject();
+            if(sx instanceof SentenceX) {
+   
+                
+            }
+        }
         model.reload(rightClickedNode);
     }
-    
 }
 
 class DragHandler extends TransferHandler {
@@ -189,3 +278,4 @@ class DragHandler extends TransferHandler {
          return true;
      }
 }
+

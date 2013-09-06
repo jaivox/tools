@@ -233,7 +233,7 @@
                       </AuxValues>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                          <JLayeredPaneConstraints x="0" y="0" width="200" height="-1" layer="0" position="-1"/>
+                          <JLayeredPaneConstraints x="0" y="0" width="360" height="-1" layer="0" position="-1"/>
                         </Constraint>
                       </Constraints>
 
@@ -257,7 +257,7 @@
                             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="dialogTreeMouseClicked"/>
                           </Events>
                           <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="new JvxDialogLoader().loadDialogs(dialogTree);"/>
+                            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="dlgLoader.loadDialogs(dialogTree);"/>
                           </AuxValues>
                         </Component>
                       </SubComponents>
@@ -268,7 +268,7 @@
                       </AuxValues>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                          <JLayeredPaneConstraints x="200" y="0" width="170" height="340" layer="0" position="-1"/>
+                          <JLayeredPaneConstraints x="360" y="0" width="290" height="340" layer="0" position="-1"/>
                         </Constraint>
                       </Constraints>
 
@@ -276,113 +276,12 @@
                       <SubComponents>
                         <Component class="javax.swing.JList" name="grammarList">
                           <Properties>
-                            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                              <Connection code="new javax.swing.AbstractListModel() {&#xa;&#x9;// String[] strings = { &quot;are NNS JJ-N at this time&quot;, &quot;which NN is JJ-P&quot; };&#xa;&#x9;String [] strings = dlgLoader.loadGrammar ();&#xa;&#x9;public int getSize() { return strings.length; }&#xa;&#x9;public Object getElementAt(int i) { return strings[i]; }&#xa;}" type="code"/>
-                            </Property>
                             <Property name="toolTipText" type="java.lang.String" value=""/>
                             <Property name="dragEnabled" type="boolean" value="true"/>
                           </Properties>
                           <Events>
                             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="grammarListMouseClicked"/>
                           </Events>
-                        </Component>
-                      </SubComponents>
-                    </Container>
-                    <Container class="javax.swing.JScrollPane" name="jScrollPane3">
-                      <AuxValues>
-                        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-                      </AuxValues>
-                      <Constraints>
-                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                          <JLayeredPaneConstraints x="370" y="0" width="290" height="180" layer="0" position="-1"/>
-                        </Constraint>
-                      </Constraints>
-
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-                      <SubComponents>
-                        <Component class="javax.swing.JTable" name="dictTab">
-                          <Properties>
-                            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                              <Table columnCount="5" rowCount="4">
-                                <Column editable="true" title="Tag" type="java.lang.Object">
-                                  <Data value="WH"/>
-                                  <Data value="NN"/>
-                                  <Data value="JJN"/>
-                                  <Data value="null"/>
-                                </Column>
-                                <Column editable="true" title="" type="java.lang.Object">
-                                  <Data value="which"/>
-                                  <Data value="road"/>
-                                  <Data value="slow"/>
-                                  <Data value="null"/>
-                                </Column>
-                                <Column editable="true" title="" type="java.lang.Object">
-                                  <Data value="what"/>
-                                  <Data value="way"/>
-                                  <Data value="bad"/>
-                                  <Data value="null"/>
-                                </Column>
-                                <Column editable="true" title="" type="java.lang.Object">
-                                  <Data value="null"/>
-                                  <Data value="route"/>
-                                  <Data value="ugh"/>
-                                  <Data value="null"/>
-                                </Column>
-                                <Column editable="true" title="" type="java.lang.Object">
-                                  <Data value="null"/>
-                                  <Data value="freeway"/>
-                                  <Data value="null"/>
-                                  <Data value="null"/>
-                                </Column>
-                              </Table>
-                            </Property>
-                            <Property name="cellSelectionEnabled" type="boolean" value="true"/>
-                          </Properties>
-                        </Component>
-                      </SubComponents>
-                    </Container>
-                    <Container class="javax.swing.JScrollPane" name="jScrollPane5">
-                      <AuxValues>
-                        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-                      </AuxValues>
-                      <Constraints>
-                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
-                          <JLayeredPaneConstraints x="380" y="220" width="270" height="90" layer="0" position="-1"/>
-                        </Constraint>
-                      </Constraints>
-
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-                      <SubComponents>
-                        <Component class="javax.swing.JTable" name="dictRelationsTab">
-                          <Properties>
-                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                              <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                                <LineBorder/>
-                              </Border>
-                            </Property>
-                            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                              <Table columnCount="3" rowCount="4">
-                                <Column editable="true" title="" type="java.lang.Object">
-                                  <Data value="road"/>
-                                  <Data value="student"/>
-                                  <Data value="road"/>
-                                  <Data value="road"/>
-                                </Column>
-                                <Column editable="true" title="" type="java.lang.Object">
-                                  <Data value="which"/>
-                                  <Data value="who"/>
-                                  <Data value="what"/>
-                                  <Data value="which"/>
-                                </Column>
-                                <Column editable="true" title="" type="java.lang.Object">
-                                  <Data value="slow"/>
-                                  <Data value="bad"/>
-                                  <Data value="ugh"/>
-                                  <Data value="busy"/>
-                                </Column>
-                              </Table>
-                            </Property>
-                          </Properties>
                         </Component>
                       </SubComponents>
                     </Container>
