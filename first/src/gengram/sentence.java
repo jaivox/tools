@@ -1,7 +1,6 @@
 package gengram;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
@@ -141,6 +140,10 @@ public class sentence {
 						if (k != i) sb.append (words [k] + " ");
 						else sb.append (w + " ");
 					}
+                    if(sb.length() > 0 && (orig.endsWith("?") || orig.endsWith("."))) { /// wrk arnd to retain the "?"
+                        sb.setCharAt(sb.length()-1, orig.charAt(orig.length()-1));
+                        //sb.append(orig.charAt(orig.length()-1));
+                    }
 					String all = new String (sb).trim ();
 					sentence s = P.doparse (all);
 					if (s == null) continue;
@@ -201,10 +204,11 @@ public class sentence {
                             sb.append (blank [i]);
                             if (i < N-1) sb.append (" ");
                     }
-                    sb.append (".");
+                    //sb.append (".");
+                    sb.append(this.orig.charAt(orig.length() - 1));
                     String statement = new String (sb);
                     combocount++;
-                    System.out.println (""+combocount+": "+statement);
+                    //System.out.println (""+combocount+": "+statement);
                     alts.add(statement);
 		}
 		else {

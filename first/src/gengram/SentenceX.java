@@ -5,12 +5,18 @@
 package gengram;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author lin
  */
 public class SentenceX {
+
+    public void setTheSentence(sentence theSentence) {
+        this.theSentence = theSentence;
+    }
     private sentence theSentence = null;
     public SentenceX(sentence c)
     {
@@ -18,6 +24,9 @@ public class SentenceX {
     }
     public sentence getSentence() {
         return theSentence;
+    }
+    public String getSentenceKey() {
+        return theSentence.orig;
     }
     public String[] getWords() {
         return this.theSentence.words;
@@ -29,7 +38,54 @@ public class SentenceX {
         return this.theSentence.orig;
     }
     public void generateokays (ArrayList <String> oks) {
-        theSentence.generateokays();
+        if(tabModvalues == null)
+            theSentence.generateokays();
         oks.addAll(theSentence.alts);
     }
+    public Object[] getSentenceOptions () {
+        return theSentence.alts.toArray();
+    }
+    public static Object[][] transpose(Object [][] mat) {
+        int rows = mat.length;
+        int cols = 0;
+        for(Object[] o : mat) cols = o != null ? Math.max(cols, o.length) : cols;
+        Object [][] tpose = new Object[cols][rows];
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                if(mat[i] == null || mat[i].length <= j) tpose[j][i] = "";
+                else tpose[j][i] = mat[i][j];
+            }
+        }
+        return tpose;
+    }
+    public Object[][] getWordOptions() {
+        String[][] okwords = getOkayWords();
+        return transpose(okwords); 
+    }
+    public void debug() {
+        theSentence.Debug(" --- SentenceX ---");
+        if(tabModvalues == null) {System.out.println("null"); return; }
+        for(ArrayList cells : tabModvalues) {
+            for(Object cell : cells) {
+                if(cells.toString().trim().length() > 0) System.out.println(cell);
+            }
+        }
+    }
+    public boolean isExcluded(String word) {
+        return excludes.contains(word);
+    }
+    public void addExclusion(String s) {
+        excludes.add(s);
+    }
+    public ArrayList<ArrayList<Object>> getTabModvalues() {
+        return tabModvalues;
+    }
+
+    public void setTabModvalues(ArrayList<ArrayList<Object>> tabModvalues) {
+        this.tabModvalues = tabModvalues;
+    }
+    
+    private ArrayList<ArrayList<Object>> tabModvalues = null;
+    private ArrayList<String> excludes = new ArrayList<>();
+
 }

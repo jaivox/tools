@@ -30,16 +30,13 @@ import javax.swing.tree.TreePath;
 public class JvxDialogHelper {
     static String datadir = JvxConfiguration.datadir;
     JvxMainFrame theFrame = null;
-    private JTree dialogTree = null;
-    DefaultMutableTreeNode rightClickedNode = null;
-    
     
     public JvxDialogHelper(JvxMainFrame frame) {
         super();
         theFrame = frame;
     }
-    public JPopupMenu createPopup() {
-        final DialogMenuAction menuAction = new DialogMenuAction(dialogTree, rightClickedNode);
+    public JPopupMenu createPopup( DefaultMutableTreeNode rightClickedNode) {
+        final DialogMenuAction menuAction = new DialogMenuAction(theFrame.getDialogTree(), rightClickedNode);
         
         JPopupMenu popup = new JPopupMenu();
         JMenuItem addMenuItem = new JMenuItem("Add");
@@ -57,71 +54,11 @@ public class JvxDialogHelper {
         popup.add(addMenuItem);
         popup.add(delMenuItem);
         popup.add(editMenuItem);
-        popup.add(createSynonymsMenu());
-        popup.add(createOkaysSynonymsMenu());
+        //popup.add(createSynonymsMenu(rightClickedNode.getUserObject()));
+        popup.add(theFrame.getSynsHelper().createOkaysSynonymsMenu(rightClickedNode.getUserObject()));
         
         return popup;
     }
-    private JMenu createSynonymsMenu() {
-        JMenu submenu = new JMenu("Synonyms");
-        
-        Object ox = rightClickedNode.getUserObject();
-        if(ox instanceof SentenceX) {
-            SentenceX sx = (SentenceX)ox;
-            String words[] = sx.getWords();
-            //String syns[] = JvxDialogLoader.gen.getSynonyms( words[words.length/2]);
-            for(String word : words) {
-                String syns[] = JvxDialogLoader.gen.getSynonyms( word );
-                if(syns != null) {
-                    JMenu syMenu = new JMenu(word);
-                    for(String s : syns) {
-                        JMenuItem menuItem = new JMenuItem(s);
-                        syMenu.add(menuItem);
-                    }
-                    submenu.add(syMenu);
-                }
-            }
-            
-        }
-        return submenu;
-    }
-    private JMenu createOkaysSynonymsMenu() {
-        JMenu submenu = new JMenu("Synonyms");
-        
-        Object ox = rightClickedNode.getUserObject();
-        if(ox instanceof SentenceX) {
-            SentenceX sx = (SentenceX)ox;
-            String words[] = sx.getWords();
-            String[][] okwords = sx.getOkayWords();
-            for(String word : words) {
-                String[] syns = null;
-                if(word == null) continue;
-                for(String[] oks : okwords) {
-                    if(oks == null) continue;
-                    for(String ok : oks) {
-                        if(ok == null) continue;
-                        if(ok.equals(word) && oks.length > 1) {
-                            syns = oks;
-                            break;
-                        }
-                    }
-                    if(syns != null) break;
-                }
-                if(syns != null) {
-                    JMenu syMenu = new JMenu(word);
-                    for(String s : syns) {
-                        if(word.equals(s)) continue;
-                        JMenuItem menuItem = new JMenuItem(s);
-                        syMenu.add(menuItem);
-                    }
-                    submenu.add(syMenu);
-                }
-            }
-            
-        }
-        return submenu;
-    }     
-
     
     public void dialogTreeRClicked(java.awt.event.MouseEvent evt) {
         JTree tree = (JTree)evt.getSource();
@@ -129,11 +66,11 @@ public class JvxDialogHelper {
         if( evt.isPopupTrigger() ) {
             int x = evt.getX();
             int y = evt.getY();
-            dialogTree = tree;
+            
             TreePath path = tree.getPathForLocation(x, y);
             if (path == null) return;
             
-            rightClickedNode =
+            DefaultMutableTreeNode rightClickedNode =
                             (DefaultMutableTreeNode)path.getLastPathComponent();
 
             TreePath[] selectionPaths = tree.getSelectionPaths();
@@ -151,21 +88,33 @@ public class JvxDialogHelper {
                 tree.setSelectionPath(path);
             }
             //if(rightClickedNode.isLeaf()){
-                JPopupMenu popup = createPopup();
+                JPopupMenu popup = createPopup(rightClickedNode);
                 popup.show(tree, x, y);
            // }
         }
         else {
         }
     }
-
+    void debugTree(JTree tree) {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+        for(Enumeration e = root.breadthFirstEnumeration(); e.hasMoreElements();) {
+            DefaultMutableTreeNode nd = (DefaultMutableTreeNode)e.nextElement();
+            System.out.println("---" + nd.getLevel() +"---");
+            Object sx = nd.getUserObject();
+            if(sx instanceof SentenceX) {
+                ((SentenceX)sx).debug();
+            }
+            System.out.println("---" + nd.getLevel() +"---");
+            
+        }
+    }
     void dialogTreeMouseClicked(MouseEvent evt) {
         JTree tree = (JTree)evt.getSource();
-        
+        //debugTree(tree);
         if(evt.getClickCount() == 1 || evt.getClickCount() == 2) {
             TreePath tpath = tree.getSelectionPath();
             if(tpath != null) {
-                ArrayList<String> oks = new ArrayList<String>();
+                ArrayList<String> oks = new ArrayList<>();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)tpath.getLastPathComponent();
                 System.out.println(node);
                 for(Enumeration e = node.breadthFirstEnumeration(); e.hasMoreElements();) {
@@ -173,14 +122,16 @@ public class JvxDialogHelper {
                     ArrayList<String> al = null;
                     Object sx = nd.getUserObject();
                     if(sx instanceof SentenceX) {
-                        al = new ArrayList<String> ();
+                        al = new ArrayList<> ();
                         ((SentenceX)sx).generateokays(al);
                     }
                     if(al != null) {
                         oks.addAll(al);
                     }
+                    break; ///?
                 }
                 theFrame.getGrammarList().setListData(oks.toArray());
+                theFrame.getSynsHelper().populateSynonymsTab(node.getUserObject());
             }
                 
         }
@@ -234,7 +185,6 @@ class DialogMenuAction implements ActionListener {
         model.reload(rightClickedNode);
     }
 }
-
 class DragHandler extends TransferHandler {
     JvxMainFrame theFrame = null;
     public DragHandler(JvxMainFrame frame)
@@ -254,7 +204,7 @@ class DragHandler extends TransferHandler {
          if (!canImport(support)) {
            return false;
          }
-
+         Component targ = support.getComponent();
          Transferable transferable = support.getTransferable();
          String line;
          try {
@@ -262,7 +212,10 @@ class DragHandler extends TransferHandler {
          } catch (Exception e) {
            return false;
          }
-
+         if(targ instanceof JTable) {
+             JTable.DropLocation dl = (JTable.DropLocation) support.getDropLocation();
+             theFrame.synsHelper.dropSynonym(line, dl.getRow(), dl.getColumn());
+         }
          JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
          
          String[] data = line.split("\n");
@@ -278,4 +231,3 @@ class DragHandler extends TransferHandler {
          return true;
      }
 }
-

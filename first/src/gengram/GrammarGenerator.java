@@ -4,8 +4,8 @@
  */
 package gengram;
 
-import static gengram.generate.P;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -50,7 +50,7 @@ public class GrammarGenerator {
             // s.findmultiwords (W);
             s.multiwordsubs (P, W);
         }
-
+/*
         // generate using okays instead of subs
         for (int i=0; i<n; i++) {
             String key = tests [i];
@@ -58,7 +58,7 @@ public class GrammarGenerator {
             System.out.println ("Sentence "+i+" Generating okays for: "+key);
             s.generateokays ();
         }
-    }
+*/    }
 
     public ArrayList<String> parseDialog(String dlg) {
         ArrayList<String> sents = new ArrayList<String>();
@@ -73,5 +73,46 @@ public class GrammarGenerator {
         }
         return sents;
     }
-
+    
+    public boolean generateAlts(String key, String word, String[] addsyns) {
+		System.out.println("----------"+ key +"-------------");
+        int news = 0;
+		TreeMap <String, sentence> sentences = P.sentences;
+		sentence sent = sentences.get (key);
+        if(sent == null) return false;
+		
+        String[] ar = W.syns.get(word);
+		ArrayList<String> arl = new ArrayList<String>();
+		if(ar != null) arl.addAll(Arrays.asList(ar));
+        for(String k : addsyns) {
+            if(!arl.contains(k)) {
+                arl.add(k);
+                news++;
+            }
+        }
+//		arl.addAll(Arrays.asList(addsyns));
+		ar = arl.toArray(new String[0]);
+		W.syns.put(word, ar);
+		
+		ar = W.dbsyns.get(word);
+		if(ar != null) {
+			arl = new ArrayList<String>();
+			if(ar != null) arl.addAll(Arrays.asList(ar));
+			for(String k : addsyns) {
+                if(!arl.contains(k)) {
+                    arl.add(k);
+                }
+            }
+            //arl.addAll(Arrays.asList(addsyns));
+			ar = arl.toArray(new String[0]);
+			W.dbsyns.put(word, ar);
+		}
+		if(news > 0) {
+            sent = new sentence(sent.orig, sent.form, sent.tree);
+            sent.multiwordsubs (P, W);
+            sent.generateokays ();
+        }
+        sentences.put(key, sent);
+        return news > 0;
+	}
 }
