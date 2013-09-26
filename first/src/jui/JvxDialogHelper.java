@@ -4,8 +4,7 @@
  */
 package jui;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import gengram.SentenceX;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -13,12 +12,15 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+
 
 
 /**
@@ -28,43 +30,47 @@ import javax.swing.tree.TreePath;
 public class JvxDialogHelper {
     static String datadir = JvxConfiguration.datadir;
     JvxMainFrame theFrame = null;
-    private JTree dialogTree = null;
-    DefaultMutableTreeNode rightClickedNode = null;
-    
     
     public JvxDialogHelper(JvxMainFrame frame) {
         super();
         theFrame = frame;
     }
-    public JPopupMenu createPopup() {
-        final DialogMenuAction menuAction = new DialogMenuAction(dialogTree, rightClickedNode);
+    public JPopupMenu createPopup( DefaultMutableTreeNode rightClickedNode) {
+        final DialogMenuAction menuAction = new DialogMenuAction(theFrame.getDialogTree(), rightClickedNode);
         
         JPopupMenu popup = new JPopupMenu();
         JMenuItem addMenuItem = new JMenuItem("Add");
         JMenuItem delMenuItem = new JMenuItem("Delete");
         JMenuItem editMenuItem = new JMenuItem("Edit");
+        //JMenuItem synMenuItem = new JMenuItem("Synonyms");
         
         addMenuItem.addActionListener(menuAction);
         delMenuItem.addActionListener(menuAction);
         editMenuItem.addActionListener(menuAction);
+        //synMenuItem.addActionListener(menuAction);
+        
+       
         
         popup.add(addMenuItem);
         popup.add(delMenuItem);
         popup.add(editMenuItem);
+        //popup.add(createSynonymsMenu(rightClickedNode.getUserObject()));
+        popup.add(theFrame.getSynsHelper().createOkaysSynonymsMenu(rightClickedNode.getUserObject()));
         
         return popup;
     }
+    
     public void dialogTreeRClicked(java.awt.event.MouseEvent evt) {
         JTree tree = (JTree)evt.getSource();
             
         if( evt.isPopupTrigger() ) {
             int x = evt.getX();
             int y = evt.getY();
-            dialogTree = tree;
+            
             TreePath path = tree.getPathForLocation(x, y);
             if (path == null) return;
             
-            rightClickedNode =
+            DefaultMutableTreeNode rightClickedNode =
                             (DefaultMutableTreeNode)path.getLastPathComponent();
 
             TreePath[] selectionPaths = tree.getSelectionPaths();
@@ -82,29 +88,54 @@ public class JvxDialogHelper {
                 tree.setSelectionPath(path);
             }
             //if(rightClickedNode.isLeaf()){
-                JPopupMenu popup = createPopup();
+                JPopupMenu popup = createPopup(rightClickedNode);
                 popup.show(tree, x, y);
            // }
         }
         else {
         }
     }
-
+    void debugTree(JTree tree) {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+        for(Enumeration e = root.breadthFirstEnumeration(); e.hasMoreElements();) {
+            DefaultMutableTreeNode nd = (DefaultMutableTreeNode)e.nextElement();
+            System.out.println("---" + nd.getLevel() +"---");
+            Object sx = nd.getUserObject();
+            if(sx instanceof SentenceX) {
+                ((SentenceX)sx).debug();
+            }
+            System.out.println("---" + nd.getLevel() +"---");
+            
+        }
+    }
     void dialogTreeMouseClicked(MouseEvent evt) {
         JTree tree = (JTree)evt.getSource();
-        
+        //debugTree(tree);
         if(evt.getClickCount() == 1 || evt.getClickCount() == 2) {
             TreePath tpath = tree.getSelectionPath();
             if(tpath != null) {
+                ArrayList<String> oks = new ArrayList<>();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)tpath.getLastPathComponent();
                 System.out.println(node);
-                theFrame.getGrammarList().setListData(Collections.list(node.breadthFirstEnumeration()).toArray());
+                for(Enumeration e = node.breadthFirstEnumeration(); e.hasMoreElements();) {
+                    DefaultMutableTreeNode nd = (DefaultMutableTreeNode)e.nextElement();
+                    ArrayList<String> al = null;
+                    Object sx = nd.getUserObject();
+                    if(sx instanceof SentenceX) {
+                        al = new ArrayList<> ();
+                        ((SentenceX)sx).generateokays(al);
+                    }
+                    if(al != null) {
+                        oks.addAll(al);
+                    }
+                    break; ///?
+                }
+                theFrame.getGrammarList().setListData(oks.toArray());
+                theFrame.getSynsHelper().populateSynonymsTab(node.getUserObject());
             }
+                
         }
-         
     }
-
-
 }
 class DialogMenuAction implements ActionListener {
 
@@ -118,7 +149,8 @@ class DialogMenuAction implements ActionListener {
     
     public void actionPerformed(ActionEvent ae) {
         DefaultTreeModel model = (DefaultTreeModel)dialogTree.getModel();
-        String action = ((JMenuItem)ae.getSource()).getText();
+        JMenuItem mi = (JMenuItem)ae.getSource();
+        String action = mi.getText();
         System.out.println("Menu: " + action);
         // TODO - may be a confirm action here
         if(action.equals("Add")) {
@@ -140,12 +172,19 @@ class DialogMenuAction implements ActionListener {
         else if(action.equals("Edit")) {
             dialogTree.startEditingAtPath(dialogTree.getSelectionPath());
         }
-        
+        if(action.equals("Synonyms")) {
+            TreePath tpath = dialogTree.getSelectionPath();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)tpath.getLastPathComponent();
+            
+            Object sx = node.getUserObject();
+            if(sx instanceof SentenceX) {
+   
+                
+            }
+        }
         model.reload(rightClickedNode);
     }
-    
 }
-
 class DragHandler extends TransferHandler {
     JvxMainFrame theFrame = null;
     public DragHandler(JvxMainFrame frame)
@@ -165,7 +204,7 @@ class DragHandler extends TransferHandler {
          if (!canImport(support)) {
            return false;
          }
-
+         Component targ = support.getComponent();
          Transferable transferable = support.getTransferable();
          String line;
          try {
@@ -173,7 +212,10 @@ class DragHandler extends TransferHandler {
          } catch (Exception e) {
            return false;
          }
-
+         if(targ instanceof JTable) {
+             JTable.DropLocation dl = (JTable.DropLocation) support.getDropLocation();
+             theFrame.synsHelper.dropSynonym(line, dl.getRow(), dl.getColumn());
+         }
          JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
          
          String[] data = line.split("\n");

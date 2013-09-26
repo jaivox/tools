@@ -5,13 +5,9 @@
 package jui;
 
 import javax.swing.*;
-import javax.swing.table.*;
 import javax.swing.tree.*;
-import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DragSource;
-import java.awt.event.*;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -19,9 +15,11 @@ import java.util.regex.Pattern;
  */
 public class JvxMainFrame extends javax.swing.JFrame {
 
-    DefaultMutableTreeNode rightClickedNode = null;
     JvxConfiguration jvxConf = null;
-    final JvxDialogLoader dlgLoader = new JvxDialogLoader ();
+    JvxDialogLoader dlgLoader = new JvxDialogLoader ();
+    JvxDialogHelper dlgHelper = null;
+    JvxSynonymsHelper synsHelper = null;
+    
     String qualData [][] = null;
     String headers [] = new String [4];
     DragSource ds;
@@ -32,8 +30,11 @@ public class JvxMainFrame extends javax.swing.JFrame {
      */
     public JvxMainFrame() {
         jvxConf = new JvxConfiguration( "" );
-        qualData = dlgLoader.loadQualData ();
+        dlgHelper = new JvxDialogHelper (this);
+        synsHelper = new JvxSynonymsHelper (this);
     
+        qualData = dlgLoader.loadQualData ();
+        
         headers [0] = "Num";
         headers [1] = "Road";
         headers [2] = "Fast";
@@ -41,8 +42,24 @@ public class JvxMainFrame extends javax.swing.JFrame {
         
         initComponents();
         dlgLoader.loadDialogs(dialogTree);
+        //dlgLoader.loadNGenGrammar(this);
+        
+        
        
         this.dialogTree.setTransferHandler(new DragHandler(this));
+        this.synsTab.setTransferHandler(new DragHandler(this));
+    }
+
+    public JvxDialogLoader getDlgLoader() {
+        return dlgLoader;
+    }
+
+    public JvxDialogHelper getDlgHelper() {
+        return dlgHelper;
+    }
+
+    public JvxSynonymsHelper getSynsHelper() {
+        return synsHelper;
     }
 
     /**
@@ -60,22 +77,20 @@ public class JvxMainFrame extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         dgdPanel = new javax.swing.JPanel();
-        dgdLayeredPane = new javax.swing.JLayeredPane();
-        dlgTreeScrollPane = new javax.swing.JScrollPane();
-        dialogTree = new javax.swing.JTree();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        grammarList = new javax.swing.JList();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        dictTab = new javax.swing.JTable();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        dictRelationsTab = new javax.swing.JTable();
         jPanel9 = new javax.swing.JPanel();
         jComboBox3 = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         qualdbTable = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        grammarList = new javax.swing.JList();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        synsTab = new javax.swing.JTable();
+        dlgTreeScrollPane = new javax.swing.JScrollPane();
+        dialogTree = new javax.swing.JTree();
         jLabel4 = new javax.swing.JLabel();
         appName = new javax.swing.JTextField();
+        Preview = new javax.swing.JButton();
         targetSpecPanel = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
@@ -119,96 +134,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        dgdPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dialog Mgmt", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(151, 149, 198)));
-
-        dgdLayeredPane.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        dgdLayeredPane.setNextFocusableComponent(dialogTree);
-        dgdLayeredPane.setRequestFocusEnabled(false);
-
-        dlgTreeScrollPane.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                dlgTreeScrollPaneFocusLost(evt);
-            }
-        });
-
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Dialogs");
-        javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("are NNS JJ-N at this time ;");
-        javax.swing.tree.DefaultMutableTreeNode treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("which NN is JJ-P");
-        treeNode2.add(treeNode3);
-        treeNode1.add(treeNode2);
-        dialogTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
-        dialogTree.setDragEnabled(true);
-        dialogTree.setDropMode(javax.swing.DropMode.INSERT);
-        dialogTree.setEditable(true);
-        dialogTree.setScrollsOnExpand(true);
-        new JvxDialogLoader().loadDialogs(dialogTree);
-        dialogTree.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                dialogTreeMousePressed(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                dialogTreeMouseReleased(evt);
-            }
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                dialogTreeMouseClicked(evt);
-            }
-        });
-        dlgTreeScrollPane.setViewportView(dialogTree);
-
-        dlgTreeScrollPane.setBounds(0, 0, 200, 342);
-        dgdLayeredPane.add(dlgTreeScrollPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
-
-        grammarList.setModel(new javax.swing.AbstractListModel() {
-            // String[] strings = { "are NNS JJ-N at this time", "which NN is JJ-P" };
-            String [] strings = dlgLoader.loadGrammar ();
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        grammarList.setToolTipText("");
-        grammarList.setDragEnabled(true);
-        grammarList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                grammarListMouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(grammarList);
-
-        jScrollPane2.setBounds(200, 0, 170, 340);
-        dgdLayeredPane.add(jScrollPane2, javax.swing.JLayeredPane.DEFAULT_LAYER);
-
-        dictTab.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"WH", "which", "what", null, null},
-                {"NN", "road", "way", "route", "freeway"},
-                {"JJN", "slow", "bad", "ugh", null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Tag", "", "", "", ""
-            }
-        ));
-        dictTab.setCellSelectionEnabled(true);
-        jScrollPane3.setViewportView(dictTab);
-
-        jScrollPane3.setBounds(370, 0, 290, 180);
-        dgdLayeredPane.add(jScrollPane3, javax.swing.JLayeredPane.DEFAULT_LAYER);
-
-        dictRelationsTab.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        dictRelationsTab.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"road", "which", "slow"},
-                {"student", "who", "bad"},
-                {"road", "what", "ugh"},
-                {"road", "which", "busy"}
-            },
-            new String [] {
-                "", "", ""
-            }
-        ));
-        jScrollPane5.setViewportView(dictRelationsTab);
-
-        jScrollPane5.setBounds(380, 220, 270, 90);
-        dgdLayeredPane.add(jScrollPane5, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        dgdPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "                   Dialogs                                                                          Synonyms                                                               Alt Sentence preview", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(151, 149, 198)));
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Roads", "Students", "Employees" }));
 
@@ -226,6 +152,8 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        qualdbTable.setCellSelectionEnabled(true);
+        qualdbTable.setDragEnabled(true);
         jScrollPane4.setViewportView(qualdbTable);
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
@@ -235,32 +163,92 @@ public class JvxMainFrame extends javax.swing.JFrame {
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE))
+                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane4))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(46, 46, 46)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addContainerGap(25, Short.MAX_VALUE))
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap(45, Short.MAX_VALUE))
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
+
+        grammarList.setToolTipText("");
+        grammarList.setDragEnabled(true);
+        grammarList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                grammarListMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(grammarList);
+
+        synsTab.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(127, 197, 234)));
+        synsTab.setModel(new SynsDataModel());
+        synsTab.setCellSelectionEnabled(true);
+        synsTab.setDragEnabled(true);
+        synsTab.setDropMode(javax.swing.DropMode.INSERT);
+        synsTab.setGridColor(new java.awt.Color(77, 131, 236));
+        synsTab.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                synsTabMousePressed(evt);
+            }
+        });
+        jScrollPane1.setViewportView(synsTab);
+
+        dlgTreeScrollPane.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                dlgTreeScrollPaneFocusLost(evt);
+            }
+        });
+
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Dialogs");
+        javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("are NNS JJ-N at this time ;");
+        javax.swing.tree.DefaultMutableTreeNode treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("which NN is JJ-P");
+        treeNode2.add(treeNode3);
+        treeNode1.add(treeNode2);
+        dialogTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        dialogTree.setDragEnabled(true);
+        dialogTree.setDropMode(javax.swing.DropMode.INSERT);
+        dialogTree.setEditable(true);
+        dialogTree.setScrollsOnExpand(true);
+        dlgLoader.loadDialogs(dialogTree);
+        dialogTree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                dialogTreeMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                dialogTreeMouseReleased(evt);
+            }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dialogTreeMouseClicked(evt);
+            }
+        });
+        dlgTreeScrollPane.setViewportView(dialogTree);
 
         javax.swing.GroupLayout dgdPanelLayout = new javax.swing.GroupLayout(dgdPanel);
         dgdPanel.setLayout(dgdPanelLayout);
         dgdPanelLayout.setHorizontalGroup(
-            dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(dgdLayeredPane)
+            dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(dgdPanelLayout.createSequentialGroup()
+                .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         dgdPanelLayout.setVerticalGroup(
             dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dgdPanelLayout.createSequentialGroup()
-                .addComponent(dgdLayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+                .addGroup(dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -279,18 +267,26 @@ public class JvxMainFrame extends javax.swing.JFrame {
             }
         });
 
+        Preview.setText("Preview");
+        Preview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PreviewActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout contentSpecPanelLayout = new javax.swing.GroupLayout(contentSpecPanel);
         contentSpecPanel.setLayout(contentSpecPanelLayout);
         contentSpecPanelLayout.setHorizontalGroup(
             contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(dgdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(contentSpecPanelLayout.createSequentialGroup()
                 .addComponent(jLabel4)
                 .addGap(18, 18, 18)
                 .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(58, 58, 58)
+                .addComponent(Preview, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(langPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(langPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(dgdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         contentSpecPanelLayout.setVerticalGroup(
             contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -299,10 +295,11 @@ public class JvxMainFrame extends javax.swing.JFrame {
                     .addComponent(langPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4)))
+                        .addComponent(jLabel4)
+                        .addComponent(Preview)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dgdPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(dgdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 3, Short.MAX_VALUE))
         );
 
         targetSpecPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Target Specification", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(210, 90, 90)));
@@ -313,7 +310,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 146, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -330,7 +327,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 130, Short.MAX_VALUE)
         );
 
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Platform Options", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Abyssinica SIL", 0, 8))); // NOI18N
@@ -346,7 +343,8 @@ public class JvxMainFrame extends javax.swing.JFrame {
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(osList, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(osList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(53, 53, 53))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -361,9 +359,12 @@ public class JvxMainFrame extends javax.swing.JFrame {
         targetSpecPanel.setLayout(targetSpecPanelLayout);
         targetSpecPanelLayout.setHorizontalGroup(
             targetSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, targetSpecPanelLayout.createSequentialGroup()
+                .addGroup(targetSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 158, Short.MAX_VALUE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 5, Short.MAX_VALUE))
         );
         targetSpecPanelLayout.setVerticalGroup(
             targetSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -372,7 +373,8 @@ public class JvxMainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         btnSave.setText("Save");
@@ -391,26 +393,24 @@ public class JvxMainFrame extends javax.swing.JFrame {
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(contentSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(targetSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addGap(32, 32, 32)
                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42))))
+                        .addGap(27, 27, 27))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                        .addComponent(targetSpecPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(contentSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(targetSpecPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(30, 30, 30)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
                     .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -425,129 +425,25 @@ public class JvxMainFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 11, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    private void dialogTreeRClicked(java.awt.event.MouseEvent evt) {
-         if( evt.isPopupTrigger() ) {
-            int x = evt.getX();
-            int y = evt.getY();
-            JTree tree = (JTree)evt.getSource();
-            TreePath path = tree.getPathForLocation(x, y);
-            if (path == null) return;
-            
-            rightClickedNode =
-                            (DefaultMutableTreeNode)path.getLastPathComponent();
-
-            TreePath[] selectionPaths = tree.getSelectionPaths();
-            //check if node was selected
-            boolean isSelected = false;
-            if (selectionPaths != null) {
-                for (TreePath selectionPath : selectionPaths) {
-                    if (selectionPath.equals(path)) {
-                        isSelected = true;
-                    }
-                }
-            }
-            //if clicked node was not selected, select it
-            if(!isSelected){
-                tree.setSelectionPath(path);
-            }
-            //if(rightClickedNode.isLeaf()){
-                JPopupMenu popup = new JPopupMenu();
-                final JMenuItem refreshMenuItem = new JMenuItem("Add Item");
-                refreshMenuItem.addActionListener(new ActionListener(){
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        System.out.println("Add node...");
-                        DefaultTreeModel model = (DefaultTreeModel)dialogTree.getModel();
-                        //DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-                        rightClickedNode.add(new DefaultMutableTreeNode("another_child"));
-                        model.reload(rightClickedNode);
-                    }
-                });
-                popup.add(refreshMenuItem);
-                popup.show(tree, x, y);
-           // }
-        }
-    }
+    
     public DefaultMutableTreeNode getMouseOnNode(int x, int y) {
         TreePath path = this.dialogTree.getPathForLocation(x, y);
         if (path == null) return null;
 
         return (DefaultMutableTreeNode)path.getLastPathComponent();
-    }
-    private void dialogTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMousePressed
-        // TODO add your handling code here:
-       //if( !evt.isPopupTrigger() ) new JvxDialogHelper(this).dialogTreeMouseClicked(evt);
-       //new JvxDialogHelper(this).
-       overlapDialog(evt, true);
-       new JvxDialogHelper(this).dialogTreeRClicked(evt);
-    }//GEN-LAST:event_dialogTreeMousePressed
+    }    
+    public DefaultMutableTreeNode getSelectedNode() {
+        TreePath tpath = dialogTree.getSelectionPath();
+        return tpath == null ? null : (DefaultMutableTreeNode)tpath.getLastPathComponent();
+    }    
     
-    Rectangle recdlg = null;
-    Rectangle scroldlg = null;
-        
-    public void overlapDialog(MouseEvent evt, boolean overlap) {
-        Rectangle rec = dgdLayeredPane.getBounds();
-        if(overlap) {
-            if(recdlg == null || scroldlg == null) {
-                recdlg = dialogTree.getBounds();
-                scroldlg = dlgTreeScrollPane.getBounds();
-            }
-            dlgTreeScrollPane.setBounds(scroldlg.x, scroldlg.y, scroldlg.height, scroldlg.width + (rec.width));
-            dialogTree.setBounds(recdlg.x, recdlg.y, recdlg.height, recdlg.width + (rec.width));
-            //this.dgdLayeredPane.moveToFront(dlgTreeScrollPane);
-        }
-        else {
-            if(recdlg != null && scroldlg != null) {
-                dlgTreeScrollPane.setBounds(scroldlg);
-                dialogTree.setBounds(recdlg);
-            }
-            //this.dgdLayeredPane.moveToBack(dlgTreeScrollPane);
-        }
-    }
-    private void dialogTreeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMouseReleased
-        // TODO add your handling code here:
-       //if( !evt.isPopupTrigger() ) return;
-       overlapDialog(evt, false);
-       new JvxDialogHelper(this).dialogTreeRClicked(evt);
-        //rightClickedNode = null;
-    }//GEN-LAST:event_dialogTreeMouseReleased
-
-
-    private void dialogTreeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMouseClicked
-        // TODO add your handling code here:
-        // init and set the Grammar panel
-        //JTree tree = (JTree)evt.getSource();
-        //DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-        
-    }//GEN-LAST:event_dialogTreeMouseClicked
-
-    private void grammarListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_grammarListMouseClicked
-        // TODO add your handling code here:
-        if( evt.isPopupTrigger() ) return;
-        JList grams = (JList)evt.getSource();
-        DefaultTableModel tab = (DefaultTableModel)dictTab.getModel();
-        tab.setRowCount(0);
-        String ts = grams.getSelectedValue().toString();
-        String tags[] = ts.split(" ");
-        for(String tag : tags) {
-            if(Pattern.compile("^[A-Z0-9]").matcher(tag.trim()).find()) {
-                tab.addRow(new String[]{tag.trim()});
-            }
-        }
-       //overlapDialog(evt, false);
-       //dgdLayeredPane.setLayer(dlgTreeScrollPane, JLayeredPane.DEFAULT_LAYER);
-       //dgdLayeredPane.moveToBack(dlgTreeScrollPane);
-    }//GEN-LAST:event_grammarListMouseClicked
-
-    private void dlgTreeScrollPaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dlgTreeScrollPaneFocusLost
-        // TODO add your handling code here:
-        //dialogTreeFocusLost(evt);
-    }//GEN-LAST:event_dlgTreeScrollPaneFocusLost
-
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
         String proj = appName.getText().trim();
@@ -561,36 +457,72 @@ public class JvxMainFrame extends javax.swing.JFrame {
         jvxConf.save(this);
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    private void appNameMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appNameMousePressed
-        // TODO add your handling code here:
-        JTextField apn = (JTextField)evt.getSource();
-        if(apn.getText().equals("Type Name ...")) apn.setText("");
-    }//GEN-LAST:event_appNameMousePressed
-
     private void appNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appNameActionPerformed
         // TODO add your handling code here:
         JTextField apn = (JTextField)evt.getSource();
         jvxConf.setAppName(apn.getText());
     }//GEN-LAST:event_appNameActionPerformed
 
+    private void appNameMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appNameMousePressed
+        // TODO add your handling code here:
+        JTextField apn = (JTextField)evt.getSource();
+        if(apn.getText().equals("Type Name ...")) apn.setText("");
+    }//GEN-LAST:event_appNameMousePressed
+
+    private void dlgTreeScrollPaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dlgTreeScrollPaneFocusLost
+        // TODO add your handling code here:
+        //dialogTreeFocusLost(evt);
+    }//GEN-LAST:event_dlgTreeScrollPaneFocusLost
+
+    private void dialogTreeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMouseClicked
+        // TODO add your handling code here:
+        // init and set the Grammar panel
+        //JTree tree = (JTree)evt.getSource();
+        //DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    }//GEN-LAST:event_dialogTreeMouseClicked
+
+    private void dialogTreeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMouseReleased
+        // TODO add your handling code here:
+        //if( !evt.isPopupTrigger() ) return;
+        //overlapDialog(evt, false);
+        dlgHelper.dialogTreeRClicked(evt);
+        //rightClickedNode = null;
+    }//GEN-LAST:event_dialogTreeMouseReleased
+
+    private void dialogTreeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dialogTreeMousePressed
+        // TODO add your handling code here:
+        if( !evt.isPopupTrigger() ) dlgHelper.dialogTreeMouseClicked(evt);
+        //overlapDialog(evt, true);
+        dlgHelper.dialogTreeRClicked(evt);
+    }//GEN-LAST:event_dialogTreeMousePressed
+
+    private void grammarListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_grammarListMouseClicked
+        // TODO add your handling code here:
+        if( evt.isPopupTrigger() ) return;
+        JList grams = (JList)evt.getSource();
+    }//GEN-LAST:event_grammarListMouseClicked
+
+    private void synsTabMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_synsTabMousePressed
+        if( evt.isPopupTrigger() ) synsHelper.synsTabMouseRClicked(evt);
+    }//GEN-LAST:event_synsTabMousePressed
+
+    private void PreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviewActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PreviewActionPerformed
+
     public JTree getDialogTree() {
         return dialogTree;
     }
 
-    public JTable getDictRelationsTab() {
-        return dictRelationsTab;
-    }
-
-    public JTable getDictTab() {
-        return dictTab;
-    }
-
+    
     public JList getGrammarList() {
         return grammarList;
     }
-    public JLayeredPane getDgdLayeredPane() {
-        return dgdLayeredPane;
+
+    public JTable getSynsTab() {
+        return synsTab;
     }
+    
     /**
      * @param args the command line arguments
      */
@@ -626,15 +558,13 @@ public class JvxMainFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Preview;
     private javax.swing.JTextField appName;
     private javax.swing.JButton btnRun;
     private javax.swing.JButton btnSave;
     private javax.swing.JPanel contentSpecPanel;
-    private javax.swing.JLayeredPane dgdLayeredPane;
     private javax.swing.JPanel dgdPanel;
     private javax.swing.JTree dialogTree;
-    private javax.swing.JTable dictRelationsTab;
-    private javax.swing.JTable dictTab;
     private javax.swing.JScrollPane dlgTreeScrollPane;
     private javax.swing.JList grammarList;
     private javax.swing.JComboBox jComboBox1;
@@ -647,14 +577,14 @@ public class JvxMainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JPanel langPanel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JComboBox osList;
     private javax.swing.JTable qualdbTable;
+    private javax.swing.JTable synsTab;
     private javax.swing.JPanel targetSpecPanel;
     // End of variables declaration//GEN-END:variables
 }
