@@ -678,3 +678,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JPanel targetSpecPanel;
     // End of variables declaration//GEN-END:variables
 }
+
+
+// mr git let me check this in !!!
