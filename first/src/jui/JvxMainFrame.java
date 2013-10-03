@@ -8,15 +8,16 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DragSource;
+import java.awt.event.ActionListener;
 
 /**
  *
  * @author lin
  */
-public class JvxMainFrame extends javax.swing.JFrame {
+public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
 
     JvxConfiguration jvxConf = null;
-    JvxDialogLoader dlgLoader = new JvxDialogLoader ();
+    JvxDialogLoader dlgLoader = new JvxDialogLoader (this);
     JvxDialogHelper dlgHelper = null;
     JvxSynonymsHelper synsHelper = null;
     
@@ -77,17 +78,24 @@ public class JvxMainFrame extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         dgdPanel = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        jComboBox3 = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        qualdbTable = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         grammarList = new javax.swing.JList();
         jScrollPane1 = new javax.swing.JScrollPane();
         synsTab = new javax.swing.JTable();
         dlgTreeScrollPane = new javax.swing.JScrollPane();
         dialogTree = new javax.swing.JTree();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        selectDbButton = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        qualdbTable = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jTextField1 = new javax.swing.JTextField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         appName = new javax.swing.JTextField();
         Preview = new javax.swing.JButton();
@@ -135,48 +143,6 @@ public class JvxMainFrame extends javax.swing.JFrame {
         );
 
         dgdPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "                   Dialogs                                                                          Synonyms                                                               Alt Sentence preview", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(151, 149, 198)));
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Roads", "Students", "Employees" }));
-
-        jLabel3.setText("Data:");
-
-        qualdbTable.setModel(new javax.swing.table.DefaultTableModel(
-            qualData,
-            headers
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        qualdbTable.setCellSelectionEnabled(true);
-        qualdbTable.setDragEnabled(true);
-        jScrollPane4.setViewportView(qualdbTable);
-
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4))
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addContainerGap(45, Short.MAX_VALUE))
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-        );
 
         grammarList.setToolTipText("");
         grammarList.setDragEnabled(true);
@@ -230,27 +196,133 @@ public class JvxMainFrame extends javax.swing.JFrame {
         });
         dlgTreeScrollPane.setViewportView(dialogTree);
 
+        jTabbedPane1.setBorder(null);
+        jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
+
+        jPanel1.setBorder(null);
+
+        selectDbButton.setText("Select DB");
+        selectDbButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectDbButtonActionPerformed(evt);
+            }
+        });
+
+        qualdbTable.setModel(new javax.swing.table.DefaultTableModel(
+            qualData,
+            headers
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        qualdbTable.setCellSelectionEnabled(true);
+        qualdbTable.setDragEnabled(true);
+        jScrollPane4.setViewportView(qualdbTable);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(selectDbButton, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 681, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addComponent(selectDbButton)
+                .addContainerGap(130, Short.MAX_VALUE))
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("DB Interface", jPanel1);
+
+        jTextField1.setText("jTextField1");
+
+        jScrollPane3.setViewportView(jTree1);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane5.setViewportView(jTable1);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE))
+                    .addComponent(jTextField1))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+        );
+
+        jTabbedPane1.addTab("Web Interface", jPanel2);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 817, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 189, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Web Service", jPanel3);
+
         javax.swing.GroupLayout dgdPanelLayout = new javax.swing.GroupLayout(dgdPanel);
         dgdPanel.setLayout(dgdPanelLayout);
         dgdPanelLayout.setHorizontalGroup(
             dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(dgdPanelLayout.createSequentialGroup()
-                .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                .addComponent(dlgTreeScrollPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.LEADING)
         );
         dgdPanelLayout.setVerticalGroup(
             dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dgdPanelLayout.createSequentialGroup()
-                .addGroup(dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
+                .addGroup(dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jLabel4.setText("App Name");
@@ -407,7 +479,6 @@ public class JvxMainFrame extends javax.swing.JFrame {
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(contentSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addComponent(targetSpecPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
@@ -415,6 +486,7 @@ public class JvxMainFrame extends javax.swing.JFrame {
                     .addComponent(btnSave)
                     .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(contentSpecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -427,12 +499,16 @@ public class JvxMainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 11, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+    public void actionPerformed(java.awt.event.ActionEvent evt) {   
+        if(evt.getActionCommand().equals("DBInterface")) {
+            this.dlgLoader.interfaceDialogs(evt);
+        }
+    } 
     public DefaultMutableTreeNode getMouseOnNode(int x, int y) {
         TreePath path = this.dialogTree.getPathForLocation(x, y);
         if (path == null) return null;
@@ -456,6 +532,10 @@ public class JvxMainFrame extends javax.swing.JFrame {
         jvxConf.setAppName(appName.getText());
         jvxConf.save(this);
     }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void PreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviewActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PreviewActionPerformed
 
     private void appNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appNameActionPerformed
         // TODO add your handling code here:
@@ -496,19 +576,20 @@ public class JvxMainFrame extends javax.swing.JFrame {
         dlgHelper.dialogTreeRClicked(evt);
     }//GEN-LAST:event_dialogTreeMousePressed
 
+    private void synsTabMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_synsTabMousePressed
+        if( evt.isPopupTrigger() ) synsHelper.synsTabMouseRClicked(evt);
+    }//GEN-LAST:event_synsTabMousePressed
+
     private void grammarListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_grammarListMouseClicked
         // TODO add your handling code here:
         if( evt.isPopupTrigger() ) return;
         JList grams = (JList)evt.getSource();
     }//GEN-LAST:event_grammarListMouseClicked
 
-    private void synsTabMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_synsTabMousePressed
-        if( evt.isPopupTrigger() ) synsHelper.synsTabMouseRClicked(evt);
-    }//GEN-LAST:event_synsTabMousePressed
-
-    private void PreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviewActionPerformed
+    private void selectDbButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectDbButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_PreviewActionPerformed
+        this.dlgLoader.interfaceDialogs(evt);
+    }//GEN-LAST:event_selectDbButtonActionPerformed
 
     public JTree getDialogTree() {
         return dialogTree;
@@ -522,7 +603,9 @@ public class JvxMainFrame extends javax.swing.JFrame {
     public JTable getSynsTab() {
         return synsTab;
     }
-    
+    public JTable getQualdbTable() {
+        return qualdbTable;
+    }
     /**
      * @param args the command line arguments
      */
@@ -568,22 +651,29 @@ public class JvxMainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane dlgTreeScrollPane;
     private javax.swing.JList grammarList;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTree jTree1;
     private javax.swing.JPanel langPanel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JComboBox osList;
     private javax.swing.JTable qualdbTable;
+    private javax.swing.JButton selectDbButton;
     private javax.swing.JTable synsTab;
     private javax.swing.JPanel targetSpecPanel;
     // End of variables declaration//GEN-END:variables

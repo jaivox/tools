@@ -12,14 +12,21 @@ import com.jaivox.tools.*;
 import gengram.GrammarGenerator;
 import gengram.SentenceX;
 import gengram.sentence;
+import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jui.inter.JvxDBMgr;
 
 /**
  *
@@ -31,10 +38,12 @@ public class JvxDialogLoader {
     static final String datfile = datadir + "road1.data";
         
     public static GrammarGenerator gen = null;
-        
-    public JvxDialogLoader() {
+    JvxMainFrame theFrame = null;
+    
+    public JvxDialogLoader(JvxMainFrame frame) {
         gen = new GrammarGenerator(filename, datfile);
         gen.generate(filename);
+        theFrame = frame;
     }
 
     public void loadDialogs(JTree dialogTree) {
@@ -171,6 +180,49 @@ public class JvxDialogLoader {
                 return table;
         }
     }
-
+    private static JvxDBMgr dbInter = null;
+    public void interfaceDialogs(ActionEvent evt) {
+        if(evt.getActionCommand().equals("DBInterface")) {
+            if(dbInter != null) {
+                List<String> tabs = dbInter.getSeletedTabs();
+                System.out.println("interfaceDialogs: done: tabs: "+ tabs.size());
+                dbInter.dispose();
+                List<List<String>> rows = dbInter.getDBMgr().queryTab(tabs.get(0));
+                Object vals[][] = new Object[rows.size()][];
+                int i = 0;
+                for(List row : rows) {
+                    vals[i++] = row.toArray();
+                }
+                try {
+                    this.theFrame.getQualdbTable().setModel(
+                            new javax.swing.table.DefaultTableModel(vals, 
+                                dbInter.getDBMgr().getTableFields(tabs.get(0)).toArray()) 
+                            );
+                } catch (SQLException ex) {
+                    Logger.getLogger(JvxDialogLoader.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            dbInter = null;
+        }
+        else {
+            java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                dbInter = new JvxDBMgr(theFrame, true);
+                dbInter.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.out.println("interfaceDialogs: db inteface closing");
+                    }
+                    @Override
+                    public void windowClosed(java.awt.event.WindowEvent e) {
+                        System.out.println("interfaceDialogs: db inteface closed");
+                    }
+                });
+                dbInter.setVisible(true);
+            }
+        });
+        }
+    }
+  
 }
 
