@@ -114,7 +114,7 @@ public class JvxDialogHelper {
         if(evt.getClickCount() == 1 || evt.getClickCount() == 2) {
             TreePath tpath = tree.getSelectionPath();
             if(tpath != null) {
-                ArrayList<String> oks = new ArrayList<>();
+                ArrayList<String> oks = new ArrayList<String>();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)tpath.getLastPathComponent();
                 System.out.println(node);
                 for(Enumeration e = node.breadthFirstEnumeration(); e.hasMoreElements();) {
@@ -122,7 +122,7 @@ public class JvxDialogHelper {
                     ArrayList<String> al = null;
                     Object sx = nd.getUserObject();
                     if(sx instanceof SentenceX) {
-                        al = new ArrayList<> ();
+                        al = new ArrayList<String> ();
                         ((SentenceX)sx).generateokays(al);
                     }
                     if(al != null) {

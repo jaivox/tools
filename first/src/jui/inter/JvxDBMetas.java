@@ -49,7 +49,7 @@ public class JvxDBMetas {
         }
     }
     public static List<String> getKeys(String type) {
-        ArrayList<String> keys = new ArrayList<>();
+        ArrayList<String> keys = new ArrayList<String>();
         for(Entry es : dbGlobals.entrySet()) {
             String k = (String) es.getKey();
             if(k.startsWith(type)) {
@@ -60,7 +60,7 @@ public class JvxDBMetas {
         return keys;
     }
     public static Map<String, String> getKeysVals(String type) {
-        Map<String, String> kv = new HashMap<>();
+        Map<String, String> kv = new HashMap<String, String>();
         for(Entry es : dbGlobals.entrySet()) {
             String k = (String) es.getKey();
             if(k.startsWith(type)) {

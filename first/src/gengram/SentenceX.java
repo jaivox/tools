@@ -86,6 +86,6 @@ public class SentenceX {
     }
     
     private ArrayList<ArrayList<Object>> tabModvalues = null;
-    private ArrayList<String> excludes = new ArrayList<>();
+    private ArrayList<String> excludes = new ArrayList<String>();
 
 }

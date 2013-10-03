@@ -164,7 +164,7 @@ public class JvxDBMgr extends javax.swing.JDialog {
         int ncols = 0;
         for(Map.Entry es : kv.entrySet()) {
             String k = (String) es.getKey();
-            List<String> rows = new ArrayList<>();
+            List<String> rows = new ArrayList<String>();
             rows.add(k);
             rows.add((String) es.getValue());
             vals[row++] = rows.toArray();
@@ -211,14 +211,14 @@ public class JvxDBMgr extends javax.swing.JDialog {
             for(int ind : sels) {
                 String sel = (String)model.getElementAt(ind);
                 List<String> fields = dbMeta.getTableFields(sel.trim());
-                List<Object> rows = new ArrayList<>();
+                List<Object> rows = new ArrayList<Object>();
                 rows.add(Boolean.FALSE);
                 rows.add(sel);
                 rows.addAll(rows.size(), fields);
                 ncols = Math.max(ncols, rows.size());
                 vals[row++] = rows.toArray();
             }
-            List<String> names = new ArrayList<>();
+            List<String> names = new ArrayList<String>();
             names.add("Select");
             names.add("Table");
             for(int i = 0; i < ncols-2; i++) {
@@ -227,7 +227,7 @@ public class JvxDBMgr extends javax.swing.JDialog {
             }
             for(int i = 0; i < row; i++) {
                 if(vals[i].length < ncols) {
-                    List<Object> l = new ArrayList<>(Arrays.asList(vals[i]));
+                    List<Object> l = new ArrayList<Object>(Arrays.asList(vals[i]));
                     for(int j = vals[i].length; j < ncols; j++) l.add("");
                     vals[i] = l.toArray();
                 }

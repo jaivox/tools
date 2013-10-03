@@ -18,7 +18,7 @@ public class javadb {
 	String protocol	= "jdbc:mysql://";					// for mysql
 	// String protocol = "jdbc:postgresql://";			// for postgres
 	String user = "root";
-	String password = "q1";
+	String password = "";
 	String dsnstub = "localhost:3306/";
 
 	Connection con;
