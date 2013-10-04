@@ -78,8 +78,18 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jComboBox1 = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         dgdPanel = new javax.swing.JPanel();
+        primaryVSplitPane = new javax.swing.JSplitPane();
+        dlgSynsHSplitPane = new javax.swing.JSplitPane();
+        jPanel5 = new javax.swing.JPanel();
         dlgTreeScrollPane = new javax.swing.JScrollPane();
         dialogTree = new javax.swing.JTree();
+        synsPreviewHSplitPane = new javax.swing.JSplitPane();
+        jPanel9 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        synsTab = new javax.swing.JTable();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        grammarList = new javax.swing.JList();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         selectDbButton = new javax.swing.JButton();
@@ -92,13 +102,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jScrollPane5 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jPanel9 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        synsTab = new javax.swing.JTable();
-        jPanel4 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        grammarList = new javax.swing.JList();
         jLabel4 = new javax.swing.JLabel();
         appName = new javax.swing.JTextField();
         Preview = new javax.swing.JButton();
@@ -147,6 +150,15 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
 
         dgdPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "                   Dialogs                                                                          Synonyms                                                               Alt Sentence preview", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(151, 149, 198)));
 
+        primaryVSplitPane.setBorder(new javax.swing.border.MatteBorder(null));
+        primaryVSplitPane.setDividerLocation(350);
+        primaryVSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        primaryVSplitPane.setContinuousLayout(true);
+
+        dlgSynsHSplitPane.setBorder(new javax.swing.border.MatteBorder(null));
+        dlgSynsHSplitPane.setDividerLocation(250);
+        dlgSynsHSplitPane.setContinuousLayout(true);
+
         dlgTreeScrollPane.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 dlgTreeScrollPaneFocusLost(evt);
@@ -176,6 +188,76 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
             }
         });
         dlgTreeScrollPane.setViewportView(dialogTree);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+        );
+
+        dlgSynsHSplitPane.setLeftComponent(jPanel5);
+
+        synsPreviewHSplitPane.setBorder(null);
+        synsPreviewHSplitPane.setDividerLocation(300);
+        synsPreviewHSplitPane.setDividerSize(4);
+        synsPreviewHSplitPane.setContinuousLayout(true);
+
+        synsTab.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(127, 197, 234)));
+        synsTab.setModel(new SynsDataModel());
+        synsTab.setCellSelectionEnabled(true);
+        synsTab.setDragEnabled(true);
+        synsTab.setDropMode(javax.swing.DropMode.INSERT);
+        synsTab.setGridColor(new java.awt.Color(77, 131, 236));
+        synsTab.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                synsTabMousePressed(evt);
+            }
+        });
+        jScrollPane1.setViewportView(synsTab);
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+        );
+
+        synsPreviewHSplitPane.setLeftComponent(jPanel9);
+
+        grammarList.setToolTipText("");
+        grammarList.setDragEnabled(true);
+        grammarList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                grammarListMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(grammarList);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
+        );
+
+        synsPreviewHSplitPane.setRightComponent(jPanel4);
+
+        dlgSynsHSplitPane.setRightComponent(synsPreviewHSplitPane);
+
+        primaryVSplitPane.setTopComponent(dlgSynsHSplitPane);
 
         jTabbedPane1.setBorder(null);
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.LEFT);
@@ -213,14 +295,14 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                 .addContainerGap()
                 .addComponent(selectDbButton, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 681, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 677, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addComponent(selectDbButton)
-                .addContainerGap(130, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
             .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
@@ -253,7 +335,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE))
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE))
                     .addComponent(jTextField1))
                 .addContainerGap())
         );
@@ -263,7 +345,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
 
@@ -273,86 +355,28 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 817, Short.MAX_VALUE)
+            .addGap(0, 813, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 189, Short.MAX_VALUE)
+            .addGap(0, 167, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Web Service", jPanel3);
 
-        jSplitPane1.setBorder(null);
-        jSplitPane1.setDividerLocation(200);
-        jSplitPane1.setDividerSize(4);
-
-        synsTab.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(127, 197, 234)));
-        synsTab.setModel(new SynsDataModel());
-        synsTab.setCellSelectionEnabled(true);
-        synsTab.setDragEnabled(true);
-        synsTab.setDropMode(javax.swing.DropMode.INSERT);
-        synsTab.setGridColor(new java.awt.Color(77, 131, 236));
-        synsTab.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                synsTabMousePressed(evt);
-            }
-        });
-        jScrollPane1.setViewportView(synsTab);
-
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
-        );
-
-        jSplitPane1.setLeftComponent(jPanel9);
-
-        grammarList.setToolTipText("");
-        grammarList.setDragEnabled(true);
-        grammarList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                grammarListMouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(grammarList);
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
-        );
-
-        jSplitPane1.setRightComponent(jPanel4);
+        primaryVSplitPane.setRightComponent(jTabbedPane1);
 
         javax.swing.GroupLayout dgdPanelLayout = new javax.swing.GroupLayout(dgdPanel);
         dgdPanel.setLayout(dgdPanelLayout);
         dgdPanelLayout.setHorizontalGroup(
             dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(dgdPanelLayout.createSequentialGroup()
-                .addComponent(dlgTreeScrollPane)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 719, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jTabbedPane1)
+            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, dgdPanelLayout.createSequentialGroup()
+                .addComponent(primaryVSplitPane)
+                .addGap(2, 2, 2))
         );
         dgdPanelLayout.setVerticalGroup(
             dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dgdPanelLayout.createSequentialGroup()
-                .addGroup(dgdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(dlgTreeScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.LEADING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 8, Short.MAX_VALUE))
+            .addComponent(primaryVSplitPane)
         );
 
         jLabel4.setText("App Name");
@@ -400,7 +424,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                         .addComponent(jLabel4)
                         .addComponent(Preview)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dgdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dgdPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 3, Short.MAX_VALUE))
         );
 
@@ -529,7 +553,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 2, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -678,6 +702,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JPanel contentSpecPanel;
     private javax.swing.JPanel dgdPanel;
     private javax.swing.JTree dialogTree;
+    private javax.swing.JSplitPane dlgSynsHSplitPane;
     private javax.swing.JScrollPane dlgTreeScrollPane;
     private javax.swing.JList grammarList;
     private javax.swing.JComboBox jComboBox1;
@@ -688,6 +713,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
@@ -697,7 +723,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
@@ -705,8 +730,10 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JPanel langPanel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JComboBox osList;
+    private javax.swing.JSplitPane primaryVSplitPane;
     private javax.swing.JTable qualdbTable;
     private javax.swing.JButton selectDbButton;
+    private javax.swing.JSplitPane synsPreviewHSplitPane;
     private javax.swing.JTable synsTab;
     private javax.swing.JPanel targetSpecPanel;
     // End of variables declaration//GEN-END:variables
