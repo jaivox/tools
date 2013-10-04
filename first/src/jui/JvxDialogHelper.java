@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import javax.swing.JPopupMenu;
@@ -19,6 +22,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.JTree;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 
@@ -94,6 +98,43 @@ public class JvxDialogHelper {
         }
         else {
         }
+    }
+    public void dumpTreeToFile(String fname) throws IOException {
+        java.io.FileOutputStream out = new FileOutputStream(fname);
+        //out.write(dumpTree(theFrame.getDialogTree()).getBytes());
+        out.write(dumpTree(theFrame.getDialogTree().getModel(), 
+                (DefaultMutableTreeNode)theFrame.getDialogTree().getModel().getRoot())
+                .getBytes());
+    }
+    
+    private String dumpTree(TreeModel model, DefaultMutableTreeNode node) {
+        StringBuffer tdump = new StringBuffer();
+        Object sx = node.getUserObject();
+        if(sx instanceof SentenceX) {
+            String s = ((SentenceX)sx).dump(node.getLevel() - 2); // skip the dialog.road
+            tdump.append(s);
+        }
+        for (int i = 0; i < model.getChildCount(node); i++) {
+            String s = dumpTree(model, (DefaultMutableTreeNode)model.getChild(node, i));
+            tdump.append( s );
+        }
+        return tdump.toString();
+    }
+    public String dumpTree(JTree tree) {
+        StringBuffer tdump = new StringBuffer();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+        int level = 0;
+        for(Enumeration e = root.depthFirstEnumeration(); e.hasMoreElements();) {
+            DefaultMutableTreeNode nd = (DefaultMutableTreeNode)e.nextElement();
+            
+            Object sx = nd.getUserObject();
+            if(sx instanceof SentenceX) {
+                String s = ((SentenceX)sx).dump(nd.getLevel() - 2); // skip the dialog.road
+                tdump.append(s);
+                System.out.println(nd.getLevel() +": "+ s);
+            }
+        }
+        return tdump.toString();
     }
     void debugTree(JTree tree) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();

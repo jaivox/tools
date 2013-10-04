@@ -102,7 +102,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="appName" min="-2" pref="160" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="58" max="-2" attributes="0"/>
-                      <Component id="Preview" min="-2" pref="80" max="-2" attributes="0"/>
+                      <Component id="dumpButton" min="-2" pref="80" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="langPanel" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -117,7 +117,7 @@
                           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                               <Component id="appName" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="Preview" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="dumpButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -615,12 +615,12 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="appNameActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="Preview">
+            <Component class="javax.swing.JButton" name="dumpButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Preview"/>
+                <Property name="text" type="java.lang.String" value="DumpTree"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PreviewActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dumpButtonActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>

@@ -9,6 +9,9 @@ import javax.swing.tree.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DragSource;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -104,7 +107,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         appName = new javax.swing.JTextField();
-        Preview = new javax.swing.JButton();
+        dumpButton = new javax.swing.JButton();
         targetSpecPanel = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
@@ -393,10 +396,10 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
             }
         });
 
-        Preview.setText("Preview");
-        Preview.addActionListener(new java.awt.event.ActionListener() {
+        dumpButton.setText("DumpTree");
+        dumpButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PreviewActionPerformed(evt);
+                dumpButtonActionPerformed(evt);
             }
         });
 
@@ -409,7 +412,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                 .addGap(18, 18, 18)
                 .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(58, 58, 58)
-                .addComponent(Preview, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(dumpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(langPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(dgdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -422,7 +425,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, contentSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel4)
-                        .addComponent(Preview)))
+                        .addComponent(dumpButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dgdPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 3, Short.MAX_VALUE))
@@ -587,9 +590,15 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jvxConf.save(this);
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    private void PreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviewActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PreviewActionPerformed
+    private void dumpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dumpButtonActionPerformed
+        try {
+            // TODO add your handling code here:
+            //this.dlgHelper.dumpTree(getDialogTree());
+            this.dlgHelper.dumpTreeToFile(JvxConfiguration.genFolder+"dlgtree.tree");
+        } catch (IOException ex) {
+            Logger.getLogger(JvxMainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_dumpButtonActionPerformed
 
     private void appNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appNameActionPerformed
         // TODO add your handling code here:
@@ -695,7 +704,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Preview;
     private javax.swing.JTextField appName;
     private javax.swing.JButton btnRun;
     private javax.swing.JButton btnSave;
@@ -704,6 +712,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JTree dialogTree;
     private javax.swing.JSplitPane dlgSynsHSplitPane;
     private javax.swing.JScrollPane dlgTreeScrollPane;
+    private javax.swing.JButton dumpButton;
     private javax.swing.JList grammarList;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
