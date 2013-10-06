@@ -92,11 +92,14 @@ public class SentenceX {
         StringBuffer sb = new StringBuffer();
         if(tabModvalues == null) theSentence.generateokays();
         Object[] alts = getSentenceOptions();
+        sb.append('*').append(this.theSentence.orig).append('\n');
         for(Object alt : alts) {
+            String sent = (String)alt;
+            if(sent.equals(this.theSentence.orig)) continue;
             boolean sel = true;
             String pad = "";
             for(String ex : excludes) {
-                if(alt.toString().contains(" "+ ex.trim())) {
+                if(sent.contains(" "+ ex.trim())) {
                     sel = false; break;
                 }
             }
@@ -104,6 +107,7 @@ public class SentenceX {
                 String format = "%"+(level - 1)+"s";
                 pad = String.format(format, " ").replace(' ', '\t');
             }
+            pad = "\t";
             if(sel) sb.append(pad).append(alt).append('\n');
         }
         return sb.toString();
