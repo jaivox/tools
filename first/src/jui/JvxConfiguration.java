@@ -19,7 +19,7 @@ import javax.swing.JTextField;
  */
 public class JvxConfiguration {
     
-    public static final String genFolder = "./gen/";
+    public static final String genFolder = "data/";
     public static final String datadir = "data/";
     
     Properties conf = null; //new Properties();

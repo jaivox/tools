@@ -12,8 +12,12 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import javax.swing.JPopupMenu;
@@ -174,6 +178,49 @@ public class JvxDialogHelper {
                 theFrame.getSynsHelper().populateSynonymsTab(node.getUserObject());
             }
                 
+        }
+    }
+    //java 7
+    void copyFile(String s, String t) throws IOException {
+        File src = new File(s);
+        File targ = new File(t);
+        Files.copy(src.toPath(), targ.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    }
+    void generateApp(JvxMainFrame ui) {
+        try {
+            String appname = ui.getAppName();
+            if(appname == null) appname = "test";
+            String apploc = "./out/"+appname+"/";
+            File f = new File(apploc);
+            System.out.println("generateApp: "+ f.getAbsolutePath() +"---"+ f.getPath());
+            f.mkdirs();
+            dumpTreeToFile(apploc + appname + ".tree");
+            copyFile("data/console.j", apploc + "console.java");
+            copyFile("data/common_en.txt", apploc + "common_en.txt");
+            copyFile("data/errors.dlg", apploc + "errors.dlg");
+            
+            applink.guiprep.generate(appname, apploc);
+            String clz = Character.toUpperCase(appname.charAt(0)) + appname.substring(1) + "Test";
+            StringBuffer code = new StringBuffer();
+            code.append("import com.jaivox.interpreter.Command;\nimport com.jaivox.interpreter.Interact;\n");
+            code.append("import java.util.Properties;\n\n");
+            code.append("public class ").append(clz);
+            code.append(" {\n");
+            code.append("\tpublic static void main(String[] args) {\n");
+            code.append("\t\tconsole c = new console() {\n\t\t\t@Override\n\t\t\tvoid initializeInterpreter () {\n");
+            code.append("\t\t\tProperties kv = new Properties ();\n\t\t\tkv.setProperty (\"common_words\", \"common_en.txt\");\n");
+            code.append("\t\t\tkv.setProperty (\"questions_file\", \"").append(appname).append(".quest\");\n");
+            code.append("\t\t\tkv.setProperty (\"grammar_file\", \"").append(appname).append(".dlg\");\n");
+            code.append("\t\t\tCommand cmd = new Command ();\n\t\t\tinter = new Interact (basedir, kv, cmd);\n");
+            code.append("\t\t\t}\t\t\t\n};\n");
+            code.append("\t}").append("\n}");
+            
+            PrintWriter out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
+            out.println(code.toString());
+            out.close ();
+                    
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }

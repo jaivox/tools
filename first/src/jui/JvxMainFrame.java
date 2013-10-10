@@ -516,6 +516,11 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         btnRun.setText("Run");
         btnRun.setMaximumSize(new java.awt.Dimension(42, 27));
         btnRun.setMinimumSize(new java.awt.Dimension(42, 27));
+        btnRun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRunActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -576,7 +581,13 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         TreePath tpath = dialogTree.getSelectionPath();
         return tpath == null ? null : (DefaultMutableTreeNode)tpath.getLastPathComponent();
     }    
-    
+    public String getAppName() {
+        String proj = appName.getText().trim();
+        if(proj.length() <= 0 || proj.equals("Type Name ...")) {
+            proj = null;
+        }
+        return proj;
+    }
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
         String proj = appName.getText().trim();
@@ -653,6 +664,11 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         // TODO add your handling code here:
         this.dlgLoader.interfaceDialogs(evt);
     }//GEN-LAST:event_selectDbButtonActionPerformed
+
+    private void btnRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRunActionPerformed
+        // TODO add your handling code here:
+        this.dlgHelper.generateApp(this);
+    }//GEN-LAST:event_btnRunActionPerformed
 
     public JTree getDialogTree() {
         return dialogTree;
