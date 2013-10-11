@@ -106,7 +106,6 @@ public class JvxDialogHelper {
         java.io.FileOutputStream out = new FileOutputStream(fname);
         //out.write(dumpTree(theFrame.getDialogTree()).getBytes());
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFrame.getDialogTree().getModel().getRoot();
-        root = root.getNextNode().getNextNode();    // skip the dialog.road
         out.write(dumpTree(theFrame.getDialogTree().getModel(), root)
                 .getBytes());
     }
@@ -118,7 +117,9 @@ public class JvxDialogHelper {
             String s = ((SentenceX)sx).dump(node.getLevel() - 2); // skip the dialog.road
             tdump.append(s);
         }
-        else tdump.append("\t").append(sx.toString()).append("\n");
+        else {
+            if(node.getLevel() > 2) tdump.append("\t").append(sx.toString()).append("\n");
+        }
         for (int i = 0; i < model.getChildCount(node); i++) {
             String s = dumpTree(model, (DefaultMutableTreeNode)model.getChild(node, i));
             tdump.append( s );
@@ -198,25 +199,26 @@ public class JvxDialogHelper {
             f.mkdirs();
             dumpTreeToFile(apploc + appname + ".tree");
             
-            copyFile("data/console.j", apploc + "console.java");
-            copyFile("data/runapp.j", apploc + "runapp.java");
             copyFile("data/common_en.txt", apploc + "common_en.txt");
             copyFile("data/errors.dlg", apploc + "errors.dlg");
-            
             applink.guiprep.generate(appname, apploc);
-            
-            StringBuffer code = new StringBuffer();
-            String clz = buildAppCode(code, "runapp", appname);
-            PrintWriter out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
-            out.println(code.toString());
-            out.close ();
-            
-            code.setLength(0);
-            clz = buildAppCode(code, "console", appname);
-            out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
-            out.println(code.toString());
-            out.close ();
-            
+
+            if(ui.getCbConsole()) {
+                StringBuffer code = new StringBuffer();
+                copyFile("data/console.j", apploc + "console.java");
+                String clz = buildAppCode(code, "console", appname);
+                PrintWriter out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
+                out.println(code.toString());
+                out.close ();
+            }
+            if(ui.getCbGoogleRecognizer()) {
+                StringBuffer code = new StringBuffer();
+                copyFile("data/runapp.j", apploc + "runapp.java");
+                String clz = buildAppCode(code, "runapp", appname);
+                PrintWriter out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
+                out.println(code.toString());
+                out.close ();
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

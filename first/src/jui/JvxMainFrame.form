@@ -641,7 +641,7 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="jPanel8" alignment="0" pref="158" max="32767" attributes="0"/>
+                          <Component id="jPanel8" alignment="0" pref="0" max="32767" attributes="0"/>
                           <Component id="jPanel6" alignment="0" max="32767" attributes="0"/>
                           <Component id="jPanel7" alignment="0" max="32767" attributes="0"/>
                       </Group>
@@ -676,16 +676,15 @@
 
               <Layout>
                 <DimensionLayout dim="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="cbGoogleRecognizer" min="-2" pref="68" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="cbGoogleRecognizer" min="-2" pref="74" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="cbSphinx" max="32767" attributes="0"/>
+                          <Component id="cbSphinx" min="-2" pref="74" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                          <Component id="cbConsole" min="-2" pref="72" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="cbConsole" min="-2" pref="79" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>

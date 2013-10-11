@@ -9,8 +9,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -78,6 +81,12 @@ public class JvxConfiguration {
     }
 
     private void setContentSpec(JvxMainFrame theFrame) {
+        String apploc = "./out/"+appName+"/";
+        try {
+            theFrame.dlgHelper.dumpTreeToFile(apploc + appName + ".tree");
+        } catch (IOException ex) {
+            Logger.getLogger(JvxConfiguration.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void setMisc(JvxMainFrame theFrame) {
@@ -88,6 +97,18 @@ public class JvxConfiguration {
         for(Object k : conf.keySet()) {
             conf.put(k, conf.get(k));       // easy way for now...
         }
+        String[] rs = theFrame.getRecognizers();
+        String rec = "";
+        for(String r : rs) {
+            rec += (r + ",");
+        }
+        conf.put("recognizer", rec);
+        rs = theFrame.getSynthesizers();
+        rec = "";
+        for(String r : rs) {
+            rec += (r + ",");
+        }
+        conf.put("synthesizers", rec);
     }
 
     private boolean validatefields(JvxMainFrame theFrame) {

@@ -10,6 +10,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DragSource;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -454,15 +456,14 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(cbGoogleRecognizer, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbGoogleRecognizer, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbSphinx, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(cbSphinx, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addComponent(cbConsole, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(cbConsole, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -543,7 +544,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
             targetSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, targetSpecPanelLayout.createSequentialGroup()
                 .addGroup(targetSpecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 158, Short.MAX_VALUE)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 5, Short.MAX_VALUE))
@@ -738,6 +739,49 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     public JTable getQualdbTable() {
         return qualdbTable;
     }
+    public String[] getRecognizers() {
+        List<String> r = new ArrayList<String>();
+        if(this.cbGoogleRecognizer.isSelected()) r.add("google");
+        if(this.cbSphinx.isSelected()) r.add("sphinx");
+        if(this.cbConsole.isSelected()) r.add("console");
+        return r.toArray(new String[r.size()]);
+    }
+    public String[] getSynthesizers() {
+        List<String> r = new ArrayList<String>();
+        if(this.cbGoogletts.isSelected()) r.add("google");
+        if(this.cbFreetts.isSelected()) r.add("freetts");
+        if(this.cbEspeak.isSelected()) r.add("espeak");
+        return r.toArray(new String[r.size()]);
+    }
+
+    public boolean getCbConsole() {
+        return cbConsole.isSelected();
+    }
+
+    public boolean getCbEspeak() {
+        return cbEspeak.isSelected();
+    }
+
+    public boolean getCbFestival() {
+        return cbFestival.isSelected();
+    }
+
+    public boolean getCbFreetts() {
+        return cbFreetts.isSelected();
+    }
+
+    public boolean getCbGoogleRecognizer() {
+        return cbGoogleRecognizer.isSelected();
+    }
+
+    public boolean getCbGoogletts() {
+        return cbGoogletts.isSelected();
+    }
+
+    public boolean getCbSphinx() {
+        return cbSphinx.isSelected();
+    }
+    
     /**
      * @param args the command line arguments
      */
