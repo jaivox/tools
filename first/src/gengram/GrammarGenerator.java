@@ -75,44 +75,54 @@ public class GrammarGenerator {
     }
     
     public boolean generateAlts(String key, String word, String[] addsyns) {
-		System.out.println("----------"+ key +"-------------");
         int news = 0;
-		TreeMap <String, sentence> sentences = P.sentences;
-		sentence sent = sentences.get (key);
+        TreeMap <String, sentence> sentences = P.sentences;
+        sentence sent = sentences.get (key);
         if(sent == null) return false;
-		
+
         String[] ar = W.syns.get(word);
-		ArrayList<String> arl = new ArrayList<String>();
-		if(ar != null) arl.addAll(Arrays.asList(ar));
+        ArrayList<String> arl = new ArrayList<String>();
+        if(ar != null) arl.addAll(Arrays.asList(ar));
         for(String k : addsyns) {
             if(!arl.contains(k)) {
                 arl.add(k);
                 news++;
             }
         }
-//		arl.addAll(Arrays.asList(addsyns));
-		ar = arl.toArray(new String[0]);
-		W.syns.put(word, ar);
-		
-		ar = W.dbsyns.get(word);
-		if(ar != null) {
-			arl = new ArrayList<String>();
-			if(ar != null) arl.addAll(Arrays.asList(ar));
-			for(String k : addsyns) {
+        //arl.addAll(Arrays.asList(addsyns));
+        ar = arl.toArray(new String[0]);
+        W.syns.put(word, ar);
+
+        ar = W.dbsyns.get(word);
+        if(ar != null) {
+            arl = new ArrayList<String>();
+            if(ar != null) arl.addAll(Arrays.asList(ar));
+            for(String k : addsyns) {
                 if(!arl.contains(k)) {
                     arl.add(k);
                 }
             }
             //arl.addAll(Arrays.asList(addsyns));
-			ar = arl.toArray(new String[0]);
-			W.dbsyns.put(word, ar);
-		}
-		if(news > 0) {
+            ar = arl.toArray(new String[0]);
+            W.dbsyns.put(word, ar);
+        }
+        if(news > 0) {
             sent = new sentence(sent.orig, sent.form, sent.tree);
             sent.multiwordsubs (P, W);
             sent.generateokays ();
         }
         sentences.put(key, sent);
         return news > 0;
-	}
+    }
+    public sentence generateAlts(String key) {
+        TreeMap <String, sentence> sentences = P.sentences;
+        sentence old = sentences.get (key);
+        if(old == null) return null;
+        sentence sent = new sentence(old.orig, old.form, old.tree);
+        sent.setSelectionhandler(old.getSelectionhandler());
+        sent.multiwordsubs (P, W);
+        sent.generateokays ();
+        sentences.put(key, sent);
+        return sent;
+    }
 }

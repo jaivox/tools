@@ -5,22 +5,28 @@
 package gengram;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
  * @author lin
  */
-public class SentenceX {
+public class SentenceX implements SelectionHandler {
 
+    private sentence theSentence = null;
+    private ArrayList<ArrayList<Object>> tabModvalues = null;
+    private ArrayList<String> excludes = new ArrayList<String>();
+
+    
     public void setTheSentence(sentence theSentence) {
         this.theSentence = theSentence;
+        this.theSentence.setSelectionhandler(this);
+        tabModvalues = null;
     }
-    private sentence theSentence = null;
     public SentenceX(sentence c)
     {
-        theSentence = c;
+        setTheSentence(c);
     }
     public sentence getSentence() {
         return theSentence;
@@ -77,6 +83,9 @@ public class SentenceX {
     public void addExclusion(String s) {
         excludes.add(s);
     }
+    public void removeExclusion(String s) {
+        excludes.remove(s);
+    }
     public ArrayList<ArrayList<Object>> getTabModvalues() {
         return tabModvalues;
     }
@@ -85,9 +94,6 @@ public class SentenceX {
         this.tabModvalues = tabModvalues;
     }
     
-    private ArrayList<ArrayList<Object>> tabModvalues = null;
-    private ArrayList<String> excludes = new ArrayList<String>();
-
     public String dump(int level) {
         StringBuffer sb = new StringBuffer();
         if(tabModvalues == null) theSentence.generateokays();
@@ -113,4 +119,14 @@ public class SentenceX {
         return sb.toString();
     }
 
+    @Override
+    public String[] filterUnSelected(String[] all) {
+        if(all == null || all.length <=0) return all;
+        int pre = all.length;
+        List<String> allsyns = new ArrayList<String>();
+        allsyns.addAll(Arrays.asList(all));
+        allsyns.removeAll(this.excludes);
+        //System.out.println("filterUnSelected: "+ pre +"---"+ allsyns.size());
+        return allsyns.toArray(new String[allsyns.size()]);
+    }
 }

@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Date;
 import java.util.Properties;
-import javax.swing.JTextField;
 
 /**
  *

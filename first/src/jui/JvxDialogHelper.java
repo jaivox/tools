@@ -105,8 +105,9 @@ public class JvxDialogHelper {
     public void dumpTreeToFile(String fname) throws IOException {
         java.io.FileOutputStream out = new FileOutputStream(fname);
         //out.write(dumpTree(theFrame.getDialogTree()).getBytes());
-        out.write(dumpTree(theFrame.getDialogTree().getModel(), 
-                (DefaultMutableTreeNode)theFrame.getDialogTree().getModel().getRoot())
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFrame.getDialogTree().getModel().getRoot();
+        root = root.getNextNode().getNextNode();    // skip the dialog.road
+        out.write(dumpTree(theFrame.getDialogTree().getModel(), root)
                 .getBytes());
     }
     
@@ -117,6 +118,7 @@ public class JvxDialogHelper {
             String s = ((SentenceX)sx).dump(node.getLevel() - 2); // skip the dialog.road
             tdump.append(s);
         }
+        else tdump.append("\t").append(sx.toString()).append("\n");
         for (int i = 0; i < model.getChildCount(node); i++) {
             String s = dumpTree(model, (DefaultMutableTreeNode)model.getChild(node, i));
             tdump.append( s );
@@ -195,33 +197,52 @@ public class JvxDialogHelper {
             System.out.println("generateApp: "+ f.getAbsolutePath() +"---"+ f.getPath());
             f.mkdirs();
             dumpTreeToFile(apploc + appname + ".tree");
+            
             copyFile("data/console.j", apploc + "console.java");
+            copyFile("data/runapp.j", apploc + "runapp.java");
             copyFile("data/common_en.txt", apploc + "common_en.txt");
             copyFile("data/errors.dlg", apploc + "errors.dlg");
             
             applink.guiprep.generate(appname, apploc);
-            String clz = Character.toUpperCase(appname.charAt(0)) + appname.substring(1) + "Test";
-            StringBuffer code = new StringBuffer();
-            code.append("import com.jaivox.interpreter.Command;\nimport com.jaivox.interpreter.Interact;\n");
-            code.append("import java.util.Properties;\n\n");
-            code.append("public class ").append(clz);
-            code.append(" {\n");
-            code.append("\tpublic static void main(String[] args) {\n");
-            code.append("\t\tconsole c = new console() {\n\t\t\t@Override\n\t\t\tvoid initializeInterpreter () {\n");
-            code.append("\t\t\tProperties kv = new Properties ();\n\t\t\tkv.setProperty (\"common_words\", \"common_en.txt\");\n");
-            code.append("\t\t\tkv.setProperty (\"questions_file\", \"").append(appname).append(".quest\");\n");
-            code.append("\t\t\tkv.setProperty (\"grammar_file\", \"").append(appname).append(".dlg\");\n");
-            code.append("\t\t\tCommand cmd = new Command ();\n\t\t\tinter = new Interact (basedir, kv, cmd);\n");
-            code.append("\t\t\t}\t\t\t\n};\n");
-            code.append("\t}").append("\n}");
             
+            StringBuffer code = new StringBuffer();
+            String clz = buildAppCode(code, "runapp", appname);
             PrintWriter out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
             out.println(code.toString());
             out.close ();
-                    
+            
+            code.setLength(0);
+            clz = buildAppCode(code, "console", appname);
+            out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
+            out.println(code.toString());
+            out.close ();
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+    //temp code
+    public String buildAppCode(StringBuffer code, String type, String appname) {
+        String clz = Character.toUpperCase(appname.charAt(0)) + appname.substring(1) + 
+                        Character.toUpperCase(type.charAt(0)) + type.substring(1);
+            
+        code.append("import com.jaivox.interpreter.Command;\nimport com.jaivox.interpreter.Interact;\n");
+        code.append("import com.jaivox.synthesizer.web.Synthesizer;\nimport java.util.Properties;\n\n");
+        code.append("public class ").append(clz);
+        code.append(" {\n");
+        code.append("\tpublic static void main(String[] args) {\n");
+        code.append("\t\t").append(type).append(" c = new ").append(type);
+        code.append("() {\n\t\t\t@Override\n\t\t\tvoid initializeInterpreter () {\n");
+        code.append("\t\t\tProperties kv = new Properties ();\n\t\t\tkv.setProperty (\"common_words\", \"common_en.txt\");\n");
+        code.append("\t\t\tkv.setProperty (\"questions_file\", \"").append(appname).append(".quest\");\n");
+        code.append("\t\t\tkv.setProperty (\"grammar_file\", \"").append(appname).append(".dlg\");\n");
+        code.append("\t\t\tkv.setProperty (\"ttslang\", \"en\");\n");
+        code.append("\t\t\tCommand cmd = new Command ();\n");
+        code.append("\t\t\tinter = new Interact (basedir, kv, cmd);\n");
+        if(!type.equals("console")) code.append("\t\t\tspeaker = new Synthesizer (basedir, kv);\n");
+        code.append("\t\t\t}\t\t\t\n};\n");
+        code.append("\t}").append("\n}");
+        return clz;    
     }
 }
 class DialogMenuAction implements ActionListener {

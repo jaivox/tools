@@ -4,6 +4,7 @@
  */
 package jui;
 
+import com.sun.awt.AWTUtilities;
 import gengram.SentenceX;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -104,6 +105,9 @@ public class JvxSynonymsHelper {
             table.setDefaultRenderer(SynsData.class, new SynsDataRenderer());
             table.setDefaultEditor(SynsData.class, new SynsDataEditor());
             SynsDataModel model = (SynsDataModel)table.getModel();
+            
+            model.addTableModelListener(null);
+            
             model.setSentence(sx.getSentenceKey(), sx);
             if(sx.getTabModvalues() != null) {
                 model.setValues( sx.getTabModvalues() );
@@ -207,22 +211,39 @@ class TableActionHandler  implements TableModelListener {
 
         if(value instanceof SynsData) {
             data = (SynsData)value;
+            boolean unexclude = false;
+            System.out.println("TableModelListener: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
+                
             if(data.getSelected() && data.getValue().length() > 0) {
-                System.out.println("TableModelListener: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
-                SwingUtilities.invokeLater( new Runnable() {
-                    public void run() {
+                //System.out.println("TableModelListener: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
+                if(model.getSentenceX().isExcluded(data.getValue())) {
+                    model.getSentenceX().removeExclusion(data.getValue());
+                    unexclude = true;
+                }
+                //SwingUtilities.invokeLater( new Runnable() {
+                  //  public void run() {
                         String key = model.getSentence();
                         theFrame.dlgLoader.gen.generateAlts(key, columnName, new String[] { data.getValue().trim() });
                         model.getSentenceX().setTheSentence( theFrame.dlgLoader.gen.getSentence(key) );
                         theFrame.getGrammarList().setListData(model.getSentenceX().getSentenceOptions());
-                
                         //fireMouseclick();
-                    }
-                } );    
+                    //}
+               // } );    
             }
-            else if((!data.getSelected()) && data.getValue().length() > 0) {
-                model.getSentenceX().addExclusion(data.getValue());
-                System.out.println("TableModelListener: Excluded: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
+            if(unexclude || ((!data.getSelected()) && data.getValue().length() > 0)) {
+                if(!unexclude) {
+                    model.getSentenceX().addExclusion(data.getValue());
+                    //System.out.println("TableModelListener: Excluded: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
+                }
+                //SwingUtilities.invokeLater( new Runnable() {
+                    //public void run() {
+                        String key = model.getSentence();
+                        theFrame.dlgLoader.gen.generateAlts(key);
+                        model.getSentenceX().setTheSentence( theFrame.dlgLoader.gen.getSentence(key) );
+                        theFrame.getGrammarList().setListData(model.getSentenceX().getSentenceOptions());
+                        //fireMouseclick();
+                  //  }
+                //} );    
             }
         }
         else System.out.println("TableModelListener: (" + row +", "+ col +") "+ value.getClass() +" "+ value.toString());
@@ -237,6 +258,20 @@ class TableActionHandler  implements TableModelListener {
                 ml.mousePressed(me);
             }
         }
+    }
+}
+class PleaseWaitDialog {
+    void pleaseWait(final JvxMainFrame parent) {
+        final Timer timer = new Timer(100, null);
+        timer.setRepeats(true);
+        timer.addActionListener(new ActionListener() {
+            private int alpha = 255;
+            @Override public void actionPerformed(ActionEvent e) {
+                timer.stop();
+            }
+        });
+
+        timer.start();
     }
 }
 class PopUpMenuAction implements ActionListener {
@@ -610,7 +645,7 @@ class SynsDataEditor extends AbstractCellEditor implements TableCellEditor, Item
     public Component getTableCellEditorComponent(JTable table,
         Object value, boolean isSelected, int row, int col) {
         
-        System.out.println("SynsDataEditor: (" + row +", "+ col +","+ isSelected +") "+ value.getClass() +" "+ value.toString());
+        //System.out.println("SynsDataEditor: (" + row +", "+ col +","+ isSelected +") "+ value.getClass() +" "+ value.toString());
         
         if(value instanceof String) {
             JTextField tf = new JTextField();

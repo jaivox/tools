@@ -118,6 +118,12 @@ public class sentence {
 			if (syn == null) continue;
 			// if (lens [i] > 1) Debug ("Checking in dbsys "+word);
 			String dbsyn [] = dbsyns.get (word);
+                        
+                        if(selectionHandler != null) {
+                            syn = selectionHandler.filterUnSelected(syn);
+                            dbsyn = selectionHandler.filterUnSelected(dbsyn);
+                        }
+                        
 			if (dbsyn != null) {
 				// Debug ("dbsyn match for "+word);
 				okay [i] = dbsyn;
@@ -225,5 +231,15 @@ public class sentence {
                     }
 		}
 	}
-		
+        public void setSelectionhandler(SelectionHandler handler) {
+            selectionHandler = handler;
+        }
+        public SelectionHandler getSelectionhandler() {
+            return selectionHandler;
+        }
+	SelectionHandler selectionHandler = null;	
+}
+
+interface SelectionHandler {
+    public String[] filterUnSelected(String[] all);
 }
