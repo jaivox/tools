@@ -4,6 +4,7 @@
  */
 package jui;
 
+import gengram.GrammarGenerator;
 import gengram.SentenceX;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +26,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -37,6 +40,7 @@ import javax.swing.tree.TreePath;
 public class JvxDialogHelper {
     static String datadir = JvxConfiguration.datadir;
     JvxMainFrame theFrame = null;
+    DlgTreeModelListener treeListener;
     
     public JvxDialogHelper(JvxMainFrame frame) {
         super();
@@ -183,68 +187,9 @@ public class JvxDialogHelper {
                 
         }
     }
-    //java 7
-    void copyFile(String s, String t) throws IOException {
-        File src = new File(s);
-        File targ = new File(t);
-        Files.copy(src.toPath(), targ.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-    }
-    void generateApp(JvxMainFrame ui) {
-        try {
-            String appname = ui.getAppName();
-            if(appname == null) appname = "test";
-            String apploc = "./out/"+appname+"/";
-            File f = new File(apploc);
-            System.out.println("generateApp: "+ f.getAbsolutePath() +"---"+ f.getPath());
-            f.mkdirs();
-            dumpTreeToFile(apploc + appname + ".tree");
-            
-            copyFile("data/common_en.txt", apploc + "common_en.txt");
-            copyFile("data/errors.dlg", apploc + "errors.dlg");
-            applink.guiprep.generate(appname, apploc);
 
-            if(ui.getCbConsole()) {
-                StringBuffer code = new StringBuffer();
-                copyFile("data/console.j", apploc + "console.java");
-                String clz = buildAppCode(code, "console", appname);
-                PrintWriter out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
-                out.println(code.toString());
-                out.close ();
-            }
-            if(ui.getCbGoogleRecognizer()) {
-                StringBuffer code = new StringBuffer();
-                copyFile("data/runapp.j", apploc + "runapp.java");
-                String clz = buildAppCode(code, "runapp", appname);
-                PrintWriter out = new PrintWriter (new FileWriter (apploc + clz + ".java"));
-                out.println(code.toString());
-                out.close ();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-    //temp code
-    public String buildAppCode(StringBuffer code, String type, String appname) {
-        String clz = Character.toUpperCase(appname.charAt(0)) + appname.substring(1) + 
-                        Character.toUpperCase(type.charAt(0)) + type.substring(1);
-            
-        code.append("import com.jaivox.interpreter.Command;\nimport com.jaivox.interpreter.Interact;\n");
-        code.append("import com.jaivox.synthesizer.web.Synthesizer;\nimport java.util.Properties;\n\n");
-        code.append("public class ").append(clz);
-        code.append(" {\n");
-        code.append("\tpublic static void main(String[] args) {\n");
-        code.append("\t\t").append(type).append(" c = new ").append(type);
-        code.append("() {\n\t\t\t@Override\n\t\t\tvoid initializeInterpreter () {\n");
-        code.append("\t\t\tProperties kv = new Properties ();\n\t\t\tkv.setProperty (\"common_words\", \"common_en.txt\");\n");
-        code.append("\t\t\tkv.setProperty (\"questions_file\", \"").append(appname).append(".quest\");\n");
-        code.append("\t\t\tkv.setProperty (\"grammar_file\", \"").append(appname).append(".dlg\");\n");
-        code.append("\t\t\tkv.setProperty (\"ttslang\", \"en\");\n");
-        code.append("\t\t\tCommand cmd = new Command ();\n");
-        code.append("\t\t\tinter = new Interact (basedir, kv, cmd);\n");
-        if(!type.equals("console")) code.append("\t\t\tspeaker = new Synthesizer (basedir, kv);\n");
-        code.append("\t\t\t}\t\t\t\n};\n");
-        code.append("\t}").append("\n}");
-        return clz;    
+    void generateApp(JvxMainFrame ui) {
+        applink.guiprep.generateApp(JvxConfiguration.getConfFile());
     }
 }
 class DialogMenuAction implements ActionListener {
@@ -340,4 +285,54 @@ class DragHandler extends TransferHandler {
          }
          return true;
      }
+}
+class DlgTreeModelListener implements TreeModelListener {
+    JvxMainFrame theFrame = null;
+    public DlgTreeModelListener(JvxMainFrame frame) {
+        theFrame = frame;
+    }
+    void handleChange(TreeModelEvent e) {
+        DefaultMutableTreeNode node;
+        node = (DefaultMutableTreeNode)
+                 (e.getTreePath().getLastPathComponent());
+        try {
+            int inds[] = e.getChildIndices();
+            for(int i : inds) {
+                node = (DefaultMutableTreeNode)(node.getChildAt(i));
+                System.out.println("New value: " + node.getUserObject());
+        
+                String s = (String) node.getUserObject();
+                Object sx = GrammarGenerator.createSentence(s);
+
+                if(s != null) node.setUserObject(sx);
+            }
+        } catch (NullPointerException exc) {}
+      fireMouseclick(e.getTreePath());
+
+    }
+    public void treeNodesChanged(TreeModelEvent e) {
+        System.out.println("treeNodesChanged");
+        
+        handleChange(e);
+    }
+    public void treeNodesInserted(TreeModelEvent e) {
+        System.out.println("TtreeNodesInserted");
+    }
+    public void treeNodesRemoved(TreeModelEvent e) {
+        System.out.println("treeNodesRemoved");
+    }
+    public void treeStructureChanged(TreeModelEvent e) {
+        System.out.println("treeStructureChanged");
+    }
+    void fireMouseclick(TreePath tpath) {
+        JTree tree = theFrame.getDialogTree();
+        //TreePath tpath = tree.getSelectionPath();
+        if(tpath != null) {
+            Rectangle rec = tree.getPathBounds(tpath);
+            MouseEvent me = new MouseEvent(tree, 0, 0, 0, rec.y, rec.y, 1, false);
+            for(MouseListener ml: tree.getMouseListeners()){
+                ml.mousePressed(me);
+            }
+        }
+    }
 }

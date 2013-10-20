@@ -1,8 +1,10 @@
 package gengram;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class sentence {
 
@@ -113,6 +115,8 @@ public class sentence {
 		int total = 0;
 		for (int i=0; i<N; i++) {
 			String word = words [i];
+                        if(basicVerbs.contains(word)) continue;
+                        
 			String syn [] = syns.get (word);
 			// if (lens [i] > 1) Debug ("Checking in syns "+word);
 			if (syn == null) continue;
@@ -146,10 +150,10 @@ public class sentence {
 						if (k != i) sb.append (words [k] + " ");
 						else sb.append (w + " ");
 					}
-                    if(sb.length() > 0 && (orig.endsWith("?") || orig.endsWith("."))) { /// wrk arnd to retain the "?"
-                        sb.setCharAt(sb.length()-1, orig.charAt(orig.length()-1));
-                        //sb.append(orig.charAt(orig.length()-1));
-                    }
+                                        if(sb.length() > 0 && (orig.endsWith("?") || orig.endsWith("."))) { /// wrk arnd to retain the "?"
+                                            sb.setCharAt(sb.length()-1, orig.charAt(orig.length()-1));
+                                            //sb.append(orig.charAt(orig.length()-1));
+                                        }
 					String all = new String (sb).trim ();
 					sentence s = P.doparse (all);
 					if (s == null) continue;
@@ -211,7 +215,9 @@ public class sentence {
                             if (i < N-1) sb.append (" ");
                     }
                     //sb.append (".");
-                    sb.append(this.orig.charAt(orig.length() - 1));
+                    if(sb.length() > 0 && (this.orig.endsWith("?") || orig.endsWith("."))) {
+                        sb.append(this.orig.charAt(orig.length() - 1));
+                    }
                     String statement = new String (sb);
                     combocount++;
                     //System.out.println (""+combocount+": "+statement);
@@ -237,7 +243,14 @@ public class sentence {
         public SelectionHandler getSelectionhandler() {
             return selectionHandler;
         }
-	SelectionHandler selectionHandler = null;	
+	
+        ///
+        SelectionHandler selectionHandler = null;	
+        public static Set<String> basicVerbs = new TreeSet<String>();
+    
+        static {
+            basicVerbs.add("be");
+        }
 }
 
 interface SelectionHandler {

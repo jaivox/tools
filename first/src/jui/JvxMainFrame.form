@@ -682,10 +682,6 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="cbSphinx" min="-2" pref="74" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="cbConsole" min="-2" pref="79" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
-                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -696,9 +692,7 @@
                               <Component id="cbGoogleRecognizer" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cbSphinx" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="cbConsole" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="22" max="32767" attributes="0"/>
+                          <EmptySpace pref="61" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -712,12 +706,6 @@
                 <Component class="javax.swing.JToggleButton" name="cbSphinx">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Sphinx"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JToggleButton" name="cbConsole">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Console"/>
-                    <Property name="toolTipText" type="java.lang.String" value="Terminal Input"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -777,11 +765,13 @@
                 <Component class="javax.swing.JCheckBox" name="cbFestival">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Festival"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="cbEspeak">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Espeak"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -800,11 +790,17 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                          <Component id="osList" min="-2" pref="114" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                                  <Component id="osList" min="-2" pref="114" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="cbConsole" alignment="0" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -815,7 +811,9 @@
                               <Component id="osList" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="61" max="32767" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="cbConsole" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="25" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -838,6 +836,13 @@
                         <StringItem index="5" value="Tab-iOS"/>
                       </StringArray>
                     </Property>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="cbConsole">
+                  <Properties>
+                    <Property name="selected" type="boolean" value="true"/>
+                    <Property name="text" type="java.lang.String" value="Console Version"/>
                   </Properties>
                 </Component>
               </SubComponents>

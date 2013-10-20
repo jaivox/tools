@@ -4,7 +4,6 @@
  */
 package jui;
 
-import com.sun.awt.AWTUtilities;
 import gengram.SentenceX;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +16,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -98,7 +98,16 @@ public class JvxSynonymsHelper {
 
     
     void populateSynonymsTab(Object ox) {
-        JTable table = theFrame.getSynsTab();
+        final JTable table = theFrame.getSynsTab();
+        
+        // disable any custom handlers
+        for(TableModelListener l : ((AbstractTableModel)table.getModel()).getTableModelListeners()) {
+            if(l instanceof TableActionHandler) table.getModel().removeTableModelListener(l);
+        }
+        for(MouseListener l : table.getTableHeader().getMouseListeners()) {
+            if(l instanceof HeaderActionHandler) table.getTableHeader().removeMouseListener(l);
+        }
+  
         if(ox instanceof SentenceX) {
             SentenceX sx = (SentenceX)ox;
            //model.setRowCount(0);
@@ -106,8 +115,7 @@ public class JvxSynonymsHelper {
             table.setDefaultEditor(SynsData.class, new SynsDataEditor());
             SynsDataModel model = (SynsDataModel)table.getModel();
             
-            model.addTableModelListener(null);
-            
+           
             model.setSentence(sx.getSentenceKey(), sx);
             if(sx.getTabModvalues() != null) {
                 model.setValues( sx.getTabModvalues() );
@@ -122,7 +130,21 @@ public class JvxSynonymsHelper {
                 TableColumn tc = table.getColumnModel().getColumn(col);
                 //tc.setHeaderRenderer(new SynsDataRenderer()); 
             }
-      
+            table.getTableHeader().setToolTipText("Click to Select All");
+            table.getTableHeader().addMouseListener(new HeaderActionHandler() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                int viewColumn = table.getTableHeader().columnAtPoint(e.getPoint());
+                                int modelColumn = table.getColumnModel().getColumn(viewColumn).getModelIndex();
+                                //SynsData d  = (SynsData) table.getModel().getValueAt(-1, viewColumn);
+                                //String s = d.toString();
+                                //d.setSelected(!d.getSelected());
+                                table.getModel().setValueAt(null, -1, modelColumn);
+                                TableColumn tc = table.getColumnModel().getColumn(viewColumn);
+                                tc.setHeaderValue(table.getModel().getColumnName(modelColumn));
+                                //System.out.println("TableHeader:mouseClicked: "+ viewColumn +"---"+ s +"---"+ d);
+                            }});
+            
             //model.debug();
             table.setShowGrid(true);
             //theFrame.getSynsTab().setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -137,7 +159,8 @@ public class JvxSynonymsHelper {
                 if(width > 0) tc.setPreferredWidth(width);
             }
             model.fireTableDataChanged();
-            model.addTableModelListener(new TableActionHandler(theFrame));  // skip the first fire
+            model.setTabListener(new TableActionHandler(theFrame));
+            model.addTableModelListener(model.getTabListener());  // skip the first fire
         }
         else {
             SynsDataModel model = (SynsDataModel)table.getModel();
@@ -159,14 +182,17 @@ public class JvxSynonymsHelper {
                 table.changeSelection(row, column, false, false);
             }
             JPopupMenu popup = new JPopupMenu();
+            JMenuItem selectMenuItem = new JMenuItem("(Un)Select All");
             JMenuItem addMenuItem = new JMenuItem("Add Row");
             JMenuItem delMenuItem = new JMenuItem("Delete");
             JMenuItem editMenuItem = new JMenuItem("Edit Row");
             
+            selectMenuItem.addActionListener(menuAction);
             addMenuItem.addActionListener(menuAction);
             delMenuItem.addActionListener(menuAction);
             editMenuItem.addActionListener(menuAction);
             
+            popup.add(selectMenuItem);
             popup.add(addMenuItem);
             popup.add(delMenuItem);
             popup.add(editMenuItem);
@@ -185,69 +211,62 @@ public class JvxSynonymsHelper {
     }
     
 }
+class HeaderActionHandler extends MouseAdapter {
+    
+}
 class TableActionHandler  implements TableModelListener {
     JvxMainFrame theFrame = null;
     String columnName = null;
     SynsDataModel model = null;
     SynsData data = null;
+    boolean regenerate = true;
+
+    public void setRegenerate(boolean regenerate) {
+        this.regenerate = regenerate;
+    }
     
     TableActionHandler(JvxMainFrame frame) {
         theFrame = frame;
     }
     @Override
     public void tableChanged(TableModelEvent e) {
-        if(e.getColumn() == TableModelEvent.ALL_COLUMNS) return;
-        if(e.getFirstRow() == TableModelEvent.HEADER_ROW) return;
-        int row = e.getFirstRow();
+        int firstrow = e.getFirstRow();
         int col = e.getColumn();
         int lastrow = e.getLastRow();
         if(col < 0) return;
         model = (SynsDataModel)e.getSource();
+        String key = model.getSentence();
         if(model.getRowCount() <= 0) return;
-        if((lastrow - row) >= model.getRowCount()) return;
-        
-        columnName = model.getColumnName(col);
-        Object value = model.getValueAt(row, col);
-
-        if(value instanceof SynsData) {
-            data = (SynsData)value;
-            boolean unexclude = false;
-            System.out.println("TableModelListener: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
+        boolean regen = false;
+            
+        for(int i = firstrow; i <= lastrow; i++) {
+            columnName = model.getColumnAt(col);
+            Object value = model.getValueAt(i, col);
+            System.out.println("TableModelListener: ("+ columnName +": "+ firstrow +"-"+ lastrow +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
+            if(value instanceof SynsData) {
+                data = (SynsData)value;
                 
-            if(data.getSelected() && data.getValue().length() > 0) {
-                //System.out.println("TableModelListener: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
-                if(model.getSentenceX().isExcluded(data.getValue())) {
-                    model.getSentenceX().removeExclusion(data.getValue());
-                    unexclude = true;
+                if(data.getSelected() && data.getValue().length() > 0) {
+                    if(model.getSentenceX().isExcluded(data.getValue())) {
+                        model.getSentenceX().removeExclusion(data.getValue());
+                        regen = true;
+                    }
+                    else regen = theFrame.dlgLoader.gen.addSynonyms(columnName, new String[] { data.getValue().trim() });
                 }
-                //SwingUtilities.invokeLater( new Runnable() {
-                  //  public void run() {
-                        String key = model.getSentence();
-                        theFrame.dlgLoader.gen.generateAlts(key, columnName, new String[] { data.getValue().trim() });
-                        model.getSentenceX().setTheSentence( theFrame.dlgLoader.gen.getSentence(key) );
-                        theFrame.getGrammarList().setListData(model.getSentenceX().getSentenceOptions());
-                        //fireMouseclick();
-                    //}
-               // } );    
-            }
-            if(unexclude || ((!data.getSelected()) && data.getValue().length() > 0)) {
-                if(!unexclude) {
-                    model.getSentenceX().addExclusion(data.getValue());
-                    //System.out.println("TableModelListener: Excluded: ("+ columnName +": "+ row +", "+ col +") "+ model.getSentence() +" - "+ value.toString());
+                else if(!data.getSelected() && data.getValue().length() > 0) {
+                    model.getSentenceX().addExclusion(data.getValue()); 
+                    regen = true;
                 }
-                //SwingUtilities.invokeLater( new Runnable() {
-                    //public void run() {
-                        String key = model.getSentence();
-                        theFrame.dlgLoader.gen.generateAlts(key);
-                        model.getSentenceX().setTheSentence( theFrame.dlgLoader.gen.getSentence(key) );
-                        theFrame.getGrammarList().setListData(model.getSentenceX().getSentenceOptions());
-                        //fireMouseclick();
-                  //  }
-                //} );    
             }
+            else System.out.println("TableModelListener: (" + firstrow +"-"+ lastrow +", "+ col +") "+ value.getClass() +" "+ value.toString());
         }
-        else System.out.println("TableModelListener: (" + row +", "+ col +") "+ value.getClass() +" "+ value.toString());
-    } 
+        if(regen) {
+            theFrame.dlgLoader.gen.generateAlts(key);
+            model.getSentenceX().setTheSentence( theFrame.dlgLoader.gen.getSentence(key) );
+            theFrame.getGrammarList().setListData(model.getSentenceX().getSentenceOptions());
+        }
+    }
+
     void fireMouseclick() {
         JTree tree = theFrame.getDialogTree();
         TreePath tpath = tree.getSelectionPath();
@@ -316,6 +335,9 @@ class PopUpMenuAction implements ActionListener {
         }
         else if(action.equals("Edit")) {
         }
+        else if(action.equals("(Un)Select All")) {
+            model.selectAll(table.getSelectedColumn());
+        }
     }
 }
 
@@ -375,10 +397,26 @@ class SynsDataModel extends AbstractTableModel {
     SentenceX theSentence = null;
     private ArrayList<String> names = null;
     private ArrayList<ArrayList<Object>> values;
+    private ArrayList<Boolean> colSelected = null;
+    
+    TableModelListener tabListener = null;
+
+    public TableModelListener getTabListener() {
+        return tabListener;
+    }
+
+    public void setTabListener(TableModelListener tabListener) {
+        this.tabListener = tabListener;
+    }
+    
 
     public SynsDataModel() {
+        init();
+    }
+    private void init() {
         values = new ArrayList<ArrayList<Object>>();
         names = new ArrayList<String>();
+        colSelected = new ArrayList<Boolean>();
     }
     public void setSentence(String s, SentenceX sx) {
         sentence = s;
@@ -419,8 +457,15 @@ class SynsDataModel extends AbstractTableModel {
         return "";
         //return new SynsData(false, "");
     }
+    String getHeader(int col) {
+        // UC tick mark
+        String qm = colSelected.get(col) ? Character.toString('\u2714') : Character.toString('\u2713');
+        return qm+names.get(col);
+    }
     @Override
     public Object getValueAt(int row, int col) {
+        //if(row == -1) return heads.get(col);
+        if(row == -1) return getHeader(col);
         if(row >= getRowCount()) return defaultValue(row, col);
         if(col >= getColumnCount()) return new SynsData(false, "");
         
@@ -433,6 +478,10 @@ class SynsDataModel extends AbstractTableModel {
     public void setValueAt(Object value, int row, int col) {
         //System.out.println("setValueAt: (" + row +", "+ col +") "+ value.getClass() +" "+ value.toString());
         
+        if(row == -1 && value == null) {
+            selectAll(col);
+            return;
+        }
         if(row >= getRowCount()) return;
         if(col >= getColumnCount()) return;
         if(value == null) return;
@@ -449,6 +498,7 @@ class SynsDataModel extends AbstractTableModel {
             prev.setValue(d.getValue());
             
             d.setSelected((Boolean) value);
+            if(!d.getSelected()) this.colSelected.set(col, Boolean.FALSE);
         }
         if(! prev.equals(values.get(row).get(col))) {
             this.fireTableCellUpdated(row, col);
@@ -465,9 +515,13 @@ class SynsDataModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int col) {
+        //return names.get(col);
+        String s = getHeader(col);
+        return s;
+    }
+    public String getColumnAt(int col) {
         return names.get(col);
     }
-
     @Override
     public boolean isCellEditable(int row, int col) {
         return true;
@@ -475,8 +529,11 @@ class SynsDataModel extends AbstractTableModel {
 
     void setDataVector(Object[][] rows, String[] words) {
         names = new ArrayList<String>();
+        colSelected = new ArrayList<Boolean>();
+  
         for(String word : words) {
             names.add(word);
+            colSelected.add(Boolean.FALSE);
         }
         
         if(rows != null) {
@@ -484,18 +541,21 @@ class SynsDataModel extends AbstractTableModel {
         
             for(Object[] row : rows) {
                 ArrayList<Object> rd = new ArrayList();
+                int col = 0;
                 for(Object cell : row) {
                     String v = (String)cell;
                     if(v == null || v.length() <= 0) {
                         rd.add(defaultValue(0, 0));
                     }
                     else {
-                        if(!names.contains(v)) {
+                        if(!names.get(col).equals(v)) {
                             boolean f = theSentence.isExcluded(cell.toString()) ? false : true;
                             rd.add(new SynsData(f, (String) cell));
+                            colSelected.set(col, f);
                         }
                         else rd.add(defaultValue(0, 0));
                     }
+                    col++;
                 }
                 values.add(rd);
             }
@@ -558,7 +618,23 @@ class SynsDataModel extends AbstractTableModel {
         }
         return -1;
     }
-
+    void selectAll(int col) {
+        TableActionHandler l = (TableActionHandler)tabListener;
+        Boolean b = !colSelected.get(col);
+        int lastrow = 0, i = 0;
+        for(ArrayList ar : values) { 
+            Object s = ar.get(col);
+            if( s instanceof SynsData ) {
+                SynsData v = (SynsData) s;
+                v.setSelected(b);
+                lastrow = i;
+            }
+            i++;
+        }
+        
+        colSelected.set(col, b);
+        this.fireTableChanged(new TableModelEvent(this, 0, lastrow, col));
+    }
     void updateValue(int row, int col, boolean selected) {
         Object o = getValueAt(row, col);
         if(o instanceof SynsData) {
@@ -594,6 +670,21 @@ class SynsDataRenderer extends JCheckBox implements TableCellRenderer {
         JTable table, Object value, boolean isSelected,
         boolean hasFocus, int row, int col) {
         //System.out.println("SynsDataRenderer: (" + row +", "+ col +") "+ value.getClass() +" "+ value.toString());
+        if(row == -1) {
+            JTableHeader header = table.getTableHeader();  
+            if (header != null) {  
+                setForeground(header.getForeground());  
+                setBackground(header.getBackground());  
+                setFont(header.getFont());  
+                SynsDataModel model = (SynsDataModel)table.getModel();
+                SynsData d = (SynsData)model.getValueAt(row, col);
+                if(d != null) {
+                    this.setSelected(d.getSelected());
+                    this.setText(d.getValue());
+                }
+            }
+            return this;
+        }
         if(value instanceof String) {
             Component c = (Component)table.getDefaultRenderer(String.class)
                             .getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
@@ -617,6 +708,7 @@ class SynsDataRenderer extends JCheckBox implements TableCellRenderer {
             setForeground(table.getForeground());
             setBackground(table.getBackground());
         }
+        
         return this;
     }
 }
@@ -645,7 +737,7 @@ class SynsDataEditor extends AbstractCellEditor implements TableCellEditor, Item
     public Component getTableCellEditorComponent(JTable table,
         Object value, boolean isSelected, int row, int col) {
         
-        //System.out.println("SynsDataEditor: (" + row +", "+ col +","+ isSelected +") "+ value.getClass() +" "+ value.toString());
+        System.out.println("SynsDataEditor: (" + row +", "+ col +","+ isSelected +") "+ value.getClass() +" "+ value.toString());
         
         if(value instanceof String) {
             JTextField tf = new JTextField();

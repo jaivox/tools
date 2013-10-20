@@ -9,6 +9,7 @@ import javax.swing.tree.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DragSource;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,8 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         dlgLoader.loadDialogs(dialogTree);
         //dlgLoader.loadNGenGrammar(this);
         
-        
+        DefaultTreeModel model = (DefaultTreeModel)dialogTree.getModel();
+        model.addTreeModelListener(new DlgTreeModelListener(this));
        
         this.dialogTree.setTransferHandler(new DragHandler(this));
         this.synsTab.setTransferHandler(new DragHandler(this));
@@ -116,7 +118,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jPanel6 = new javax.swing.JPanel();
         cbGoogleRecognizer = new javax.swing.JToggleButton();
         cbSphinx = new javax.swing.JToggleButton();
-        cbConsole = new javax.swing.JToggleButton();
         jPanel7 = new javax.swing.JPanel();
         cbFreetts = new javax.swing.JCheckBox();
         cbGoogletts = new javax.swing.JCheckBox();
@@ -125,6 +126,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jPanel8 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         osList = new javax.swing.JComboBox();
+        cbConsole = new javax.swing.JCheckBox();
         btnSave = new javax.swing.JButton();
         btnRun = new javax.swing.JButton();
 
@@ -450,9 +452,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
 
         cbSphinx.setText("Sphinx");
 
-        cbConsole.setText("Console");
-        cbConsole.setToolTipText("Terminal Input");
-
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -461,9 +460,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                 .addComponent(cbGoogleRecognizer, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbSphinx, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(cbConsole, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -472,9 +468,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbGoogleRecognizer)
                     .addComponent(cbSphinx))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cbConsole)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "TTS options", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Abyssinica SIL", 0, 8))); // NOI18N
@@ -484,8 +478,10 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         cbGoogletts.setText("Google TTS");
 
         cbFestival.setText("Festival");
+        cbFestival.setEnabled(false);
 
         cbEspeak.setText("Espeak");
+        cbEspeak.setEnabled(false);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -518,16 +514,24 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         jLabel2.setText("OS: ");
 
         osList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Linux-RH", "Linux-Debian", "Windows", "Mac", "Tab-Android", "Tab-iOS" }));
+        osList.setEnabled(false);
+
+        cbConsole.setSelected(true);
+        cbConsole.setText("Console Version");
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addComponent(jLabel2)
-                .addGap(4, 4, 4)
-                .addComponent(osList, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(4, 4, 4)
+                        .addComponent(osList, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(cbConsole, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -535,7 +539,9 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(osList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cbConsole)
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout targetSpecPanelLayout = new javax.swing.GroupLayout(targetSpecPanel);
@@ -642,17 +648,40 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         }
         return proj;
     }
-    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        // TODO add your handling code here:
+    public String fileDialog(String appname) {
+        final JFileChooser fc = new JFileChooser();
+        String loc = null;
+        fc.setDialogTitle("Choose Application Location(Folder)");
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setCurrentDirectory(new File("./"));
+        int returnVal = fc.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            loc = fc.getSelectedFile().getAbsolutePath();
+        } 
+        return loc;
+    }
+    public boolean save() {
         String proj = appName.getText().trim();
+        
         if(proj.length() <= 0 || proj.equals("Type Name ...")) {
             JOptionPane.showMessageDialog(null,
                 "Missing: Application Name", "Error Massage",
                 JOptionPane.ERROR_MESSAGE);
-            return;
+            
+            proj = "test"; appName.setText(proj);
+            //return false;
         }
         jvxConf.setAppName(appName.getText());
+        String f = fileDialog(appName.getText());
+        if(f != null) jvxConf.appFolder = f + File.separatorChar + 
+                                            appName.getText() + 
+                                            File.separatorChar;
         jvxConf.save(this);
+        return true;
+    }
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+        save();
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void dumpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dumpButtonActionPerformed
@@ -721,13 +750,13 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
 
     private void btnRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRunActionPerformed
         // TODO add your handling code here:
+        if(!save()) return;
         this.dlgHelper.generateApp(this);
     }//GEN-LAST:event_btnRunActionPerformed
 
     public JTree getDialogTree() {
         return dialogTree;
     }
-
     
     public JList getGrammarList() {
         return grammarList;
@@ -743,7 +772,6 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
         List<String> r = new ArrayList<String>();
         if(this.cbGoogleRecognizer.isSelected()) r.add("google");
         if(this.cbSphinx.isSelected()) r.add("sphinx");
-        if(this.cbConsole.isSelected()) r.add("console");
         return r.toArray(new String[r.size()]);
     }
     public String[] getSynthesizers() {
@@ -820,7 +848,7 @@ public class JvxMainFrame extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JTextField appName;
     private javax.swing.JButton btnRun;
     private javax.swing.JButton btnSave;
-    private javax.swing.JToggleButton cbConsole;
+    private javax.swing.JCheckBox cbConsole;
     private javax.swing.JCheckBox cbEspeak;
     private javax.swing.JCheckBox cbFestival;
     private javax.swing.JCheckBox cbFreetts;

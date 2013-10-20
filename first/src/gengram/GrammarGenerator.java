@@ -74,12 +74,9 @@ public class GrammarGenerator {
         return sents;
     }
     
-    public boolean generateAlts(String key, String word, String[] addsyns) {
+    public boolean addSynonyms(String word, String[] addsyns) {
         int news = 0;
-        TreeMap <String, sentence> sentences = P.sentences;
-        sentence sent = sentences.get (key);
-        if(sent == null) return false;
-
+        
         String[] ar = W.syns.get(word);
         ArrayList<String> arl = new ArrayList<String>();
         if(ar != null) arl.addAll(Arrays.asList(ar));
@@ -106,12 +103,6 @@ public class GrammarGenerator {
             ar = arl.toArray(new String[0]);
             W.dbsyns.put(word, ar);
         }
-        if(news > 0) {
-            sent = new sentence(sent.orig, sent.form, sent.tree);
-            sent.multiwordsubs (P, W);
-            sent.generateokays ();
-        }
-        sentences.put(key, sent);
         return news > 0;
     }
     public sentence generateAlts(String key) {
@@ -124,5 +115,15 @@ public class GrammarGenerator {
         sent.generateokays ();
         sentences.put(key, sent);
         return sent;
+    }
+    public static SentenceX createSentence(String statement) {
+        sentence sent = P.doparse (statement);
+        if (sent != null) P.sentences.put (sent.orig, sent);
+        sent.multiwordsubs (P, W);
+        SentenceX sx = sent == null ? null : new SentenceX( sent );
+        return sx;
+    }
+    public static void removeSentence(Object key) {
+        P.sentences.remove(key);
     }
 }

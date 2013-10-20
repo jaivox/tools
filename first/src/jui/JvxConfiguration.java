@@ -23,9 +23,10 @@ public class JvxConfiguration {
     
     public static final String genFolder = "data/";
     public static final String datadir = "data/";
+    public static String appFolder = "./";
     
-    Properties conf = null; //new Properties();
-    String appName = null;
+    static Properties conf = null; //new Properties();
+    static String appName = null;
     JvxConfiguration(String text) {
         conf = new Properties() {
             @Override
@@ -55,24 +56,33 @@ public class JvxConfiguration {
         }
         appName = text;
     }
-
+    public static String getAppFolder() {
+        return appFolder.endsWith(File.separator) ? appFolder : (appFolder + File.separator);
+    }
+    public static String getConfFile() {
+        return getAppFolder() + appName + ".conf";
+    }
     void save(JvxMainFrame theFrame) {
         if(appName == null) return;
-        setContentSpec(theFrame);
+        File targFolder = new File(appFolder);
+        targFolder.mkdirs();
+        System.out.println("save: path: "+ targFolder.getAbsolutePath());
+        
         setTargetSpec(theFrame);
         setMisc(theFrame);
         validatefields(theFrame);
         BufferedWriter bf = null;
         try {
-            File f = new File(genFolder + appName + ".conf");
-            f.mkdirs();
             if(conf.get("overwrite_files").equals("yes")) {
-                f.delete();
+                for(File file: targFolder.listFiles()) file.delete();
             }
-            f.createNewFile();
+            File cf = new File(getAppFolder() + appName + ".conf");
+            cf.createNewFile();
             
-            bf = new BufferedWriter(new FileWriter(genFolder + appName + ".conf"));
+            bf = new BufferedWriter(new FileWriter(cf));
             conf.store(bf, "Jvgen-" + new Date());
+        
+            setContentSpec(theFrame);
         }
         catch (Exception e) { e.printStackTrace(); }
         finally {
@@ -81,15 +91,16 @@ public class JvxConfiguration {
     }
 
     private void setContentSpec(JvxMainFrame theFrame) {
-        String apploc = "./out/"+appName+"/";
         try {
-            theFrame.dlgHelper.dumpTreeToFile(apploc + appName + ".tree");
+            theFrame.dlgHelper.dumpTreeToFile(appFolder + appName + ".tree");
         } catch (IOException ex) {
             Logger.getLogger(JvxConfiguration.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private void setMisc(JvxMainFrame theFrame) {
+        conf.put("destination", getAppFolder());
+        conf.put("cpsrc", "data");
     }
 
     private void setTargetSpec(JvxMainFrame theFrame) {
@@ -98,17 +109,15 @@ public class JvxConfiguration {
             conf.put(k, conf.get(k));       // easy way for now...
         }
         String[] rs = theFrame.getRecognizers();
-        String rec = "";
         for(String r : rs) {
-            rec += (r + ",");
+            conf.put("recognizer_"+r, "true");
         }
-        conf.put("recognizer", rec);
+        
         rs = theFrame.getSynthesizers();
-        rec = "";
         for(String r : rs) {
-            rec += (r + ",");
+            conf.put("synthesizer_"+r, "true");
         }
-        conf.put("synthesizers", rec);
+        conf.put("console", theFrame.getCbConsole() ? "true" : "false");
     }
 
     private boolean validatefields(JvxMainFrame theFrame) {

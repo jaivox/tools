@@ -17,7 +17,6 @@ public class SentenceX implements SelectionHandler {
     private sentence theSentence = null;
     private ArrayList<ArrayList<Object>> tabModvalues = null;
     private ArrayList<String> excludes = new ArrayList<String>();
-
     
     public void setTheSentence(sentence theSentence) {
         this.theSentence = theSentence;
