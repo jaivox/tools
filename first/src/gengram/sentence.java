@@ -158,7 +158,13 @@ public class sentence {
 					sentence s = P.doparse (all);
 					if (s == null) continue;
 					if (s.form == null) continue;
-					if (matches (s.form)) {
+                                        
+                                        boolean skipPOSMatch = false;
+                                        if(selectionHandler != null) {
+                                            skipPOSMatch = selectionHandler.skipPOSFormMatch(w);
+                                        }
+                        
+					if (skipPOSMatch || matches (s.form)) {
 						hold.add (w);
 					}
 				}
@@ -255,4 +261,5 @@ public class sentence {
 
 interface SelectionHandler {
     public String[] filterUnSelected(String[] all);
+    public boolean skipPOSFormMatch(String word);
 }

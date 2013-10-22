@@ -93,6 +93,7 @@ public class JvxConfiguration {
     private void setContentSpec(JvxMainFrame theFrame) {
         try {
             theFrame.dlgHelper.dumpTreeToFile(appFolder + appName + ".tree");
+            theFrame.dlgHelper.dumpDialogToFile(appFolder + "dialog" + ".tree");
         } catch (IOException ex) {
             Logger.getLogger(JvxConfiguration.class.getName()).log(Level.SEVERE, null, ex);
         }

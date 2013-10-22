@@ -1,4 +1,4 @@
-package applink;
+    package applink;
 
 
 import java.io.*;
@@ -7,7 +7,7 @@ import bitpix.list.*;
 
 public class Rule2Fsm {
 
-	static final String dir = "./";
+	static String dir = "./";
 	basicTree tree;
 	TreeMap <String, String> states;
 	TreeMap <String, String> tags;

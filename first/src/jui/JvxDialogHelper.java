@@ -13,12 +13,8 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import javax.swing.JPopupMenu;
@@ -110,8 +106,8 @@ public class JvxDialogHelper {
         java.io.FileOutputStream out = new FileOutputStream(fname);
         //out.write(dumpTree(theFrame.getDialogTree()).getBytes());
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFrame.getDialogTree().getModel().getRoot();
-        out.write(dumpTree(theFrame.getDialogTree().getModel(), root)
-                .getBytes());
+        String buf = dumpTree(theFrame.getDialogTree().getModel(), root);
+        out.write(buf.getBytes());
     }
     
     private String dumpTree(TreeModel model, DefaultMutableTreeNode node) {
@@ -130,21 +126,32 @@ public class JvxDialogHelper {
         }
         return tdump.toString();
     }
-    public String dumpTree(JTree tree) {
+    public void dumpDialogToFile(String fname) throws IOException {
+        java.io.FileOutputStream out = new FileOutputStream(fname);
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFrame.getDialogTree().getModel().getRoot();
         StringBuffer tdump = new StringBuffer();
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+        
+        dumpDialog(root, tdump);
+        out.write(tdump.toString().getBytes());
+    }
+    public void dumpDialog(DefaultMutableTreeNode node, StringBuffer tdump) {
         int level = 0;
-        for(Enumeration e = root.depthFirstEnumeration(); e.hasMoreElements();) {
-            DefaultMutableTreeNode nd = (DefaultMutableTreeNode)e.nextElement();
-            
-            Object sx = nd.getUserObject();
-            if(sx instanceof SentenceX) {
-                String s = ((SentenceX)sx).dump(nd.getLevel() - 2); // skip the dialog.road
-                tdump.append(s);
-                System.out.println(nd.getLevel() +": "+ s);
+        while(node != null) {
+            level = node.getLevel();
+            //System.out.println(level +": "+ node);
+            if(level < 2) { 
+                node = node.getNextNode();  // skil dialog.road
+                continue;
             }
+            for(int i = 0; i < level-2; i++) tdump.append('\t');
+            tdump.append('(').append(node.toString()).append(')');
+            if(!node.isLeaf()) {
+                node = (DefaultMutableTreeNode)node.getNextNode();
+                tdump.append(" (").append(node.toString()).append(')');
+            }
+            tdump.append('\n');
+            node = node.getNextNode();
         }
-        return tdump.toString();
     }
     void debugTree(JTree tree) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
@@ -278,13 +285,28 @@ class DragHandler extends TransferHandler {
              if (!item.isEmpty()) {
                 //DefaultMutableTreeNode node = (DefaultMutableTreeNode)dl.getPath().getLastPathComponent();
                 Point p = dl.getDropPoint();
-                DefaultMutableTreeNode node = theFrame.getMouseOnNode((int)p.getX(), (int)p.getY());
-                node.add(new DefaultMutableTreeNode(item));
-                ((DefaultTreeModel)theFrame.getDialogTree().getModel()).reload(node);
+                DefaultMutableTreeNode dropnode = theFrame.getMouseOnNode((int)p.getX(), (int)p.getY());
+                DefaultMutableTreeNode dragnode = new DefaultMutableTreeNode(item);
+                dropnode.add(dragnode);
+                ((DefaultTreeModel)theFrame.getDialogTree().getModel()).reload(dropnode);
+                
+                Object sx = GrammarGenerator.createSentence(item);
+                if(sx != null) dragnode.setUserObject(sx);
              }
          }
+         if(data != null && data.length > 0) fireMouseclick(dl.getDropPoint());
          return true;
      }
+     void fireMouseclick(Point p) {
+        JTree tree = theFrame.getDialogTree();
+        //TreePath tpath = tree.getSelectionPath();
+        if(p != null) {
+            MouseEvent me = new MouseEvent(tree, 0, 0, 0, (int)p.getX(), (int)p.getY(), 1, false);
+            for(MouseListener ml: tree.getMouseListeners()) {
+                ml.mousePressed(me);
+            }
+        }
+    }
 }
 class DlgTreeModelListener implements TreeModelListener {
     JvxMainFrame theFrame = null;
@@ -299,30 +321,30 @@ class DlgTreeModelListener implements TreeModelListener {
             int inds[] = e.getChildIndices();
             for(int i : inds) {
                 node = (DefaultMutableTreeNode)(node.getChildAt(i));
-                System.out.println("New value: " + node.getUserObject());
+                //System.out.println("New value: " + node.getUserObject());
         
                 String s = (String) node.getUserObject();
                 Object sx = GrammarGenerator.createSentence(s);
 
-                if(s != null) node.setUserObject(sx);
+                if(sx != null) node.setUserObject(sx);
             }
         } catch (NullPointerException exc) {}
       fireMouseclick(e.getTreePath());
 
     }
     public void treeNodesChanged(TreeModelEvent e) {
-        System.out.println("treeNodesChanged");
+        //System.out.println("treeNodesChanged");
         
         handleChange(e);
     }
     public void treeNodesInserted(TreeModelEvent e) {
-        System.out.println("TtreeNodesInserted");
+        //System.out.println("TtreeNodesInserted");
     }
     public void treeNodesRemoved(TreeModelEvent e) {
         System.out.println("treeNodesRemoved");
     }
     public void treeStructureChanged(TreeModelEvent e) {
-        System.out.println("treeStructureChanged");
+        //System.out.println("treeStructureChanged");
     }
     void fireMouseclick(TreePath tpath) {
         JTree tree = theFrame.getDialogTree();
@@ -330,7 +352,7 @@ class DlgTreeModelListener implements TreeModelListener {
         if(tpath != null) {
             Rectangle rec = tree.getPathBounds(tpath);
             MouseEvent me = new MouseEvent(tree, 0, 0, 0, rec.y, rec.y, 1, false);
-            for(MouseListener ml: tree.getMouseListeners()){
+            for(MouseListener ml: tree.getMouseListeners()) {
                 ml.mousePressed(me);
             }
         }

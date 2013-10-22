@@ -7,6 +7,8 @@ package gengram;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -17,6 +19,7 @@ public class SentenceX implements SelectionHandler {
     private sentence theSentence = null;
     private ArrayList<ArrayList<Object>> tabModvalues = null;
     private ArrayList<String> excludes = new ArrayList<String>();
+    public static Set<String> userWords = new TreeSet<String>();
     
     public void setTheSentence(sentence theSentence) {
         this.theSentence = theSentence;
@@ -127,5 +130,16 @@ public class SentenceX implements SelectionHandler {
         allsyns.removeAll(this.excludes);
         //System.out.println("filterUnSelected: "+ pre +"---"+ allsyns.size());
         return allsyns.toArray(new String[allsyns.size()]);
+    }
+
+    @Override
+    public boolean skipPOSFormMatch(String word) {
+        return userWords.contains(word);
+    }
+    public void addUserWord(String s) {
+        userWords.add(s);
+    }
+    public void removeUserWord(String s) {
+        userWords.remove(s);
     }
 }

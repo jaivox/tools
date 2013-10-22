@@ -76,6 +76,9 @@ public class guiprep {
             outfile = destination + project +".dlg";
             questions = destination + project +".quest";
             Gui2Gram.dlgtree = destination + project +".tree";
+            Rule2Fsm.dir = "";
+            Rule2Fsm.name = destination + "dialog" +".tree";
+            Gui2Gram.gram = destination + "dialog" +".tree";
             applink.guiprep.generate();
 
             if(conf.getProperty("console", "false").equalsIgnoreCase("true")) {
